@@ -44,5 +44,5 @@ app.get('/api/get-speech-token', async (req, res, next) => {
 });
 
 app.listen(port, () =>
-    console.log(`Express server is running on localhost:${port}`)
+    console.log(`Express server is running on port:${port}`)
 );
