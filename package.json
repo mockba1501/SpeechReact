@@ -26,8 +26,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "server": "node-env-run server --exec nodemon | pino-colada",
-    "dev": "run-p server local",
-    "postinstall": "npm install && npm run build"
+    "dev": "run-p server local"
   },
   "eslintConfig": {
     "extends": [
