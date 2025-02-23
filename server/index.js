@@ -43,6 +43,11 @@ app.get('/api/get-speech-token', async (req, res, next) => {
     }
 });
 
+// Handle 404 for invalid routes
+app.use((req, res) => {
+    res.status(404).send('Not Found');
+});
+
 app.listen(port, () =>
     console.log(`Express server is running on port:${port}`)
 );
