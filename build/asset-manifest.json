@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/voice/static/css/main.0deeb155.css",
+    "main.js": "/voice/static/js/main.2fb8cfae.js",
+    "index.html": "/voice/index.html",
+    "main.0deeb155.css.map": "/voice/static/css/main.0deeb155.css.map",
+    "main.2fb8cfae.js.map": "/voice/static/js/main.2fb8cfae.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.0deeb155.css",
+    "static/js/main.2fb8cfae.js"
+  ]
+}
