@@ -7,7 +7,7 @@ import { ResultReason } from 'microsoft-cognitiveservices-speech-sdk';
 const speechsdk = require('microsoft-cognitiveservices-speech-sdk')
 
 export default function App() { 
-    const [displayText, setDisplayText] = useState('INITIALIZED: ready to test speech...');
+    const [displayText, setDisplayText] = useState('INITIALIZED: ready to test speech press the microphone...');
     const [player, updatePlayer] = useState({p: undefined, muted: false});
 
     async function sttFromMic() {
