@@ -6,7 +6,7 @@ const pino = require('express-pino-logger')();
 const cors = require('cors');
 const path = require('path');
 const app = express();
-const port = process.env.SERVER_PORT || 8080;
+const port = process.env.SERVER_PORT || 3000;
 console.log('PORT:', port);
 
 app.use(bodyParser.urlencoded({ extended: false }));
