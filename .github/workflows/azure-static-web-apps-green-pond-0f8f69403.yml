@@ -23,14 +23,6 @@ jobs:
           submodules: true
           lfs: false
 
-      - name: Get Id Token
-        uses: actions/github-script@v6
-        id: idtoken
-        with:
-           script: |
-               const coredemo = require('@actions/core')
-               return await coredemo.getIDToken()
-           result-encoding: string
       - name: Install dependencies and build
         run: |
           npm install
