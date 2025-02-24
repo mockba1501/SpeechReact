@@ -13,9 +13,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(pino);
 app.use(cors());
 
-// Serve static files from the React app
-app.use(express.static(path.join(__dirname, "../build")));
-
 app.get('/api/get-speech-token', async (req, res, next) => {
     res.setHeader('Content-Type', 'application/json');
     const speechKey = process.env.SPEECH_KEY;
