@@ -7,7 +7,7 @@ console.log('BASE_URL:', BASE_URL);
 export async function getTokenOrRefresh() {
     const cookie = new Cookie();
     const speechToken = cookie.get('speech-token');
-    console.log('Token fetched from cookie: ' + speechToken);
+    //console.log('Token fetched from cookie: ' + speechToken);
     
     if (speechToken === undefined) {
         try {
@@ -18,7 +18,7 @@ export async function getTokenOrRefresh() {
             //console.log('Token fetched from backend:'); // Log the token
             cookie.set('speech-token', region + ':' + token, {maxAge: 540, path: '/'});
 
-            console.log('Token fetched from back-end: ' + token + ' region: ' + region);
+            //console.log('Token fetched from back-end: ' + token + ' region: ' + region);
             return { authToken: token, region: region };
         } catch (err) {
             console.log(err.response.data);
@@ -26,7 +26,7 @@ export async function getTokenOrRefresh() {
         }
     } else {
         //console.log('Token fetched from cookie: ' + speechToken);
-        console.log('Token fetched from cookie: ');
+        //console.log('Token fetched from cookie: ');
         const idx = speechToken.indexOf(':');
         return { authToken: speechToken.slice(idx + 1), region: speechToken.slice(0, idx) };
     }

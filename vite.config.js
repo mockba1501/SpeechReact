@@ -8,7 +8,7 @@ export default defineConfig({
   // Build-specific configurations
   build: {
     sourcemap: true, // Enable source maps for debugging
-    minify: 'false', // Use Terser for minification (default)
+    minify: 'Terser', // Use Terser for minification (default)
     /*terserOptions: {
       compress: {
         drop_console: true, // Remove console.log statements in production

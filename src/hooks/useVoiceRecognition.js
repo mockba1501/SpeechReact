@@ -80,7 +80,7 @@ const useVoiceRecognition = () => {
             const speechEndPoint = import.meta.env.VITE_APP_SPEECH_ENDPOINT;
             
             speechConfig.endpointId = speechEndPoint; // Replace with your endpoint ID
-            console.log("Speech Endpoint ",speechEndPoint);
+            //console.log("Speech Endpoint ",speechEndPoint);
 
             const audioConfig = speechsdk.AudioConfig.fromDefaultMicrophoneInput();
             const recognizer = new speechsdk.SpeechRecognizer(speechConfig, audioConfig);
