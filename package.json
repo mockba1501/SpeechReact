@@ -6,6 +6,7 @@
   "dependencies": {
     "@emotion/cache": "^11.14.0",
     "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^6.4.0",
     "axios": "^1.4.0",
     "microsoft-cognitiveservices-speech-sdk": "^1.32.0",

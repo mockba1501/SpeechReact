@@ -18,4 +18,7 @@ export default defineConfig({
     outDir: 'dist', // Output directory (default is 'dist')
     emptyOutDir: true, // Empty the output directory before building*/
   },
+  optimizeDeps: {
+    include: ['@emotion/react', '@emotion/styled'], // Ensure Emotion is optimized
+  },
 })
