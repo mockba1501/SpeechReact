@@ -46,7 +46,8 @@ jobs:
           github_id_token: ${{ steps.idtoken.outputs.result }}
           ###### End of Repository/Build Configurations ######
         env:
-          REACT_APP_BASE_URL: ${{secrets.REACT_APP_BASE_URL}}
+          VITE_BASE_URL: ${{secrets.VITE_BASE_URL}}
+          VITE_APP_SPEECH_ENDPOINT: ${{secrets.VITE_APP_SPEECH_ENDPOINT}}
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
     runs-on: ubuntu-latest
