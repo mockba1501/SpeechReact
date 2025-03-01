@@ -73,7 +73,7 @@ const useVoiceRecognition = () => {
                 throw new Error("Authorization token is null or undefined");
             }
 
-            console.log("speechsdk: ",speechsdk)
+            //console.log("speechsdk: ",speechsdk)
             const speechConfig = speechsdk.SpeechConfig.fromAuthorizationToken(tokenObj.authToken, tokenObj.region);
             speechConfig.speechRecognitionLanguage = 'en-US';
             // Use the custom model endpoint
