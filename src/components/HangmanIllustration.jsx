@@ -9,7 +9,7 @@ const HangmanIllustration = () => {
         <div>
         {/* The hangman illustration is displayed based on the number of wrong guesses */}  
         <img 
-            src={`images/hangman-${wrongGuesses}.svg`} 
+            src={`/images/hangman-${wrongGuesses}.svg`} 
             alt="Hangman Illustration" 
             className="pointer-events-none max-w-[270px] select-none max-md:max-w-[200px]"
         />
