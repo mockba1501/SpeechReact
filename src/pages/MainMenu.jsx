@@ -1,16 +1,16 @@
 import { useNavigate } from "react-router-dom";
-
-const games = [
-  { id: "hangman", name: "Hangman", description: "Classic word guessing game." },
-  { id: "word-puzzle", name: "Word Puzzle", description: "Solve the missing letters." },
-  { id: "hangman2", name: "Hangman", description: "Classic word guessing game." },
-  { id: "word-puzzle2", name: "Word Puzzle", description: "Solve the missing letters." },
-  { id: "hangman3", name: "Hangman", description: "Classic word guessing game." },
-  { id: "word-puzzle3", name: "Word Puzzle", description: "Solve the missing letters." }
-];
+import { games, gameSettings } from "../constants/gameData";
 
 const MainMenu = () => {
   const navigate = useNavigate();
+  
+  const handleGameSelection = (gameId) => {
+    if (gameSettings[gameId]?.length > 0) {
+      navigate(`/settings/${gameId}`);
+    } else {
+      navigate(`/game/${gameId}`);
+    }
+  };
 
   return (
     <div className="flex h-screen items-center justify-center px-3">
@@ -21,7 +21,7 @@ const MainMenu = () => {
           {games.map((game) => (
             <div
               key={game.id}
-              onClick={() => navigate(`/settings/${game.id}`)}
+              onClick={() => handleGameSelection(game.id)}
               className="flex flex-col items-center justify-center rounded-lg bg-gray-100 p-6 shadow-md transition hover:bg-gray-200 hover:shadow-lg cursor-pointer"
             >
               <h2 className="text-xl font-semibold text-gray-700">{game.name}</h2>

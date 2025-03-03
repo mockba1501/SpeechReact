@@ -1,3 +1,12 @@
+export const games = [
+  { id: "hangman", name: "Hangman", description: "Classic word guessing game." },
+  { id: "word-puzzle", name: "Word Puzzle", description: "Solve the missing letters." },
+  { id: "hangman2", name: "Hangman", description: "Classic word guessing game." },
+  { id: "word-puzzle2", name: "Word Puzzle", description: "Solve the missing letters." },
+  { id: "hangman3", name: "Hangman", description: "Classic word guessing game." },
+  { id: "word-puzzle3", name: "Word Puzzle", description: "Solve the missing letters." }
+];
+
 export const gameSettings = {
     "hangman": [
       { id: "age", label: "Age", options: ["5 to 7 years old", "8 to 13 years old", "14 to 17 years old", "more than 18 years old"] },
