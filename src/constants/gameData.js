@@ -1,10 +1,43 @@
+const HANGMAN_URL = import.meta.env.VITE_HANGMAN_WORD_API;
+const HANGMAN_PROJECT_ID = import.meta.env.VITE_HANGMAN_PROJECT_ID;
+
 export const games = [
-  { id: "hangman", name: "Classic Hangman", description: "Classic word guessing game." },
-  { id: "hangman2", name: "Hangman", description: "Classic word guessing game." },
-  { id: "word-puzzle", name: "Word Puzzle", description: "Solve the missing letters." },
-  { id: "word-puzzle2", name: "Word Puzzle", description: "Solve the missing letters." },
-  { id: "hangman3", name: "Hangman", description: "Classic word guessing game." },
-  { id: "word-puzzle3", name: "Word Puzzle", description: "Solve the missing letters." }
+  { 
+    id: "hangman", 
+    name: "Classic Hangman", 
+    description: "Classic word guessing game.",
+    requiresSettings: false,
+    fetchWords: false,
+    fetchPath: "",
+    projectID: ""
+  },
+  { 
+    id: "hangman2", 
+    name: "Hangman", 
+    description: "Classic word guessing game.",
+    requiresSettings: true,
+    fetchWords: true,
+    fetchPath: `${HANGMAN_URL}`, 
+    projectID: `${HANGMAN_PROJECT_ID}`
+  },
+  { 
+    id: "word-puzzle", 
+    name: "Word Puzzle", 
+    description: "Solve the missing letters.",
+    requiresSettings: true,
+    fetchWords: false,
+    fetchPath: "", 
+    projectID: ""
+  },
+  { 
+    id: "word-puzzle2", 
+    name: "Word Puzzle", 
+    description: "Solve the missing letters.",
+    requiresSettings: false,
+    fetchWords: false,
+    fetchPath: "", 
+    projectID: ""
+  },
 ];
 
 export const gameSettings = {
