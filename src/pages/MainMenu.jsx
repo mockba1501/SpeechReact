@@ -21,7 +21,7 @@ const MainMenu = () => {
           {games.map((game) => (
             <div
               key={game.id}
-              onClick={() => navigate("/")}
+              onClick={() => navigate(`/settings/${game.id}`)}
               className="flex flex-col items-center justify-center rounded-lg bg-gray-100 p-6 shadow-md transition hover:bg-gray-200 hover:shadow-lg cursor-pointer"
             >
               <h2 className="text-xl font-semibold text-gray-700">{game.name}</h2>
