@@ -1,5 +1,5 @@
 {
-  "name": "Hangman-react",
+  "name": "SpeechTherapyGames",
   "private": true,
   "version": "0.2.0",
   "type": "module",
@@ -12,6 +12,7 @@
     "microsoft-cognitiveservices-speech-sdk": "^1.32.0",
     "react": "^18.2.0",
     "react-dom": "^18.0.1",
+    "react-router-dom": "^7.2.0",
     "universal-cookie": "^4.0.4"
   },
   "scripts": {
