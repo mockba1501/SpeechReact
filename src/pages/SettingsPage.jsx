@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { games, gameSettings } from "../constants/gameData";
+import { wordList } from "../constants";
 
 const SettingsPage = () => {
   const { gameId } = useParams();
@@ -23,7 +24,7 @@ const SettingsPage = () => {
     if (!game.fetchWords) return; // Skip API call if not needed
     
     setLoading(true);
-
+    /*
     const payload = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -59,15 +60,24 @@ const SettingsPage = () => {
         console.error("Error fetching words:", error);
     }
     setLoading(false);
-    
+    */
+
+    const data = wordList;
+    console.log(data);
+    setWordChoices(data);
   };
 
   const handleChange = (id, value) => {
     setSelectedSettings((prev) => ({ ...prev, [id]: value }));
   };
 
+  const handleProceedToWordSelection = () => {
+    navigate(`/word-selection/${gameId}`, { state: { settings: selectedSettings, words: wordChoices } });
+  };
+
   const handleStartGame = () => {
-    navigate(`/game/${gameId}`, { state: selectedSettings });
+    console.log("Clicked Start Game");
+    navigate(`/game/${gameId}`, { state: {settings: selectedSettings, words: selectedWords} });
   };
 
   return (
@@ -105,6 +115,15 @@ const SettingsPage = () => {
             >
                 {loading ? "Loading..." : "Fetch Words"}
         </button>
+
+        {wordChoices.length > 0 && (
+            <button
+                onClick={handleProceedToWordSelection}
+                className="bg-green-500 text-white px-4 py-2 mt-3 rounded"
+            >
+                Select Words
+            </button>
+        )}
 
         <button
           onClick={handleStartGame}
