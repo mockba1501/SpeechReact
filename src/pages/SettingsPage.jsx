@@ -1,12 +1,66 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { gameSettings } from "../constants/gameData";
+import { games, gameSettings } from "../constants/gameData";
 
 const SettingsPage = () => {
   const { gameId } = useParams();
   const navigate = useNavigate();
+
   const settings = gameSettings[gameId] || [];
-  const [selectedSettings, setSelectedSettings] = useState({});
+  const game = games.find((g) => g.id === gameId);
+  
+  //Initialize the selected settings with default values
+  const [selectedSettings, setSelectedSettings] = useState(() =>
+    settings.reduce((acc, setting) => {
+      acc[setting.id] = setting.options[0];
+      return acc;
+    }, {})
+  );
+  const [wordChoices, setWordChoices] = useState([]);   // Store words to be used in the game
+  const [loading, setLoading] = useState(false);        // Loading state
+  
+  const fetchWordChoices = async () => {
+    if (!game.fetchWords) return; // Skip API call if not needed
+    
+    setLoading(true);
+
+    const payload = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          "params": 
+                  {
+                      "position": selectedSettings.position,
+                      "age": selectedSettings.age,
+                      "sound": selectedSettings.sound
+                  },
+          "project": game.projectID }),
+    }
+    //console.log(payload)
+
+    try {
+        const response = await fetch(game.fetchPath, payload );
+        const data = await response.json();
+        const cleanString = data.output.answer
+            .replace(/```json\n/, '') // Remove opening backticks and JSON identifier
+            .replace(/```/g, '') // Remove closing backticks
+            .replace(/\n/g, ''); // Remove newlines
+
+        //Parse the internal JSON string
+        try {
+            const result = JSON.parse(cleanString);
+            //console.log(result);
+            } catch (error) {
+            console.error("Error parsing JSON:", error);
+        }
+
+        setWordChoices(data); // Store received words
+    } catch (error) {
+        console.error("Error fetching words:", error);
+    }
+    setLoading(false);
+    
+  };
 
   const handleChange = (id, value) => {
     setSelectedSettings((prev) => ({ ...prev, [id]: value }));
@@ -43,6 +97,14 @@ const SettingsPage = () => {
             <p className="text-gray-500">No settings available for this game.</p>
           )}
         </div>
+
+        <button 
+                onClick={fetchWordChoices} 
+                className="bg-blue-500 text-white px-4 py-2 mt-3 rounded"
+                disabled={loading}
+            >
+                {loading ? "Loading..." : "Fetch Words"}
+        </button>
 
         <button
           onClick={handleStartGame}

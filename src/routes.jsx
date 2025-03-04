@@ -10,11 +10,11 @@ const AppRoutes = () => (
   <Router>
     <Routes>
       <Route path="/" element={<Layout />}>
-      <Route index element={<MainMenu />} />
-      <Route path="/settings/:gameId" element={<SettingsPage />} />
-      <Route path="/game/hangman" element={<HangmanGame />} />
-  {/*    <Route path="/game/word-puzzle" element={<WordPuzzleGame />} />
-      */}
+        <Route index element={<MainMenu />} />
+        <Route path="/settings/:gameId" element={<SettingsPage />} />
+        <Route path="/game/hangman" element={<HangmanGame />} />
+    {/*    <Route path="/game/word-puzzle" element={<WordPuzzleGame />} />
+        */}
       </Route>
     </Routes>
   </Router>
