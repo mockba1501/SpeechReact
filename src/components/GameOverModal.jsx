@@ -16,7 +16,7 @@ const GameOverModal = () => {
         >
             <div className="flex max-w-[420px] flex-grow flex-col items-center rounded-lg border bg-white p-7 text-center shadow-2xl">
                 {/* Display appropriate gif based on game outcome */}
-                <img className="mb-5 max-w-32 max-md:w-28" src={showModal ? `images/${isGameWon ? 'won' : 'lost'}.gif` : ''} alt="Gif" />
+                <img className="mb-5 max-w-32 max-md:w-28" src={showModal ? `/images/${isGameWon ? 'won' : 'lost'}.gif` : ''} alt="Gif" />
         
                 {/* Display game outcome message */}
                 <h4 className="text-2xl font-bold">
