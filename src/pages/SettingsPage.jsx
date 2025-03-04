@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { games, gameSettings } from "../constants/gameData";
 import { wordList } from "../constants";
@@ -19,8 +19,10 @@ const SettingsPage = () => {
   );
   const [wordChoices, setWordChoices] = useState([]);   // Store words to be used in the game
   const [loading, setLoading] = useState(false);        // Loading state
+  const [wordsFetched, setWordsFetched] = useState(false); // Ensure that words fetched successfully
   
   const fetchWordChoices = async () => {
+    console.log("Trying to fetch words...");
     if (!game.fetchWords) return; // Skip API call if not needed
     
     setLoading(true);
@@ -65,19 +67,24 @@ const SettingsPage = () => {
     const data = wordList;
     console.log(data);
     setWordChoices(data);
+    setWordsFetched(true);
+    
   };
+
+  useEffect(() => {
+    if (wordsFetched && wordChoices.length > 0) {
+      console.log("Proceeding to Word Selection Page...");
+      navigate(`/word-selection/${gameId}`, { state: { settings: selectedSettings, words: wordChoices } });
+    }
+  }, [wordChoices, wordsFetched, navigate, gameId, selectedSettings]);
 
   const handleChange = (id, value) => {
     setSelectedSettings((prev) => ({ ...prev, [id]: value }));
   };
 
-  const handleProceedToWordSelection = () => {
-    navigate(`/word-selection/${gameId}`, { state: { settings: selectedSettings, words: wordChoices } });
-  };
-
   const handleStartGame = () => {
     console.log("Clicked Start Game");
-    navigate(`/game/${gameId}`, { state: {settings: selectedSettings, words: selectedWords} });
+    navigate(`/game/${gameId}`, { state: {settings: selectedSettings}});
   };
 
   return (
@@ -108,29 +115,25 @@ const SettingsPage = () => {
           )}
         </div>
 
-        <button 
+        {game.fetchWords && (
+          <button 
                 onClick={fetchWordChoices} 
                 className="bg-blue-500 text-white px-4 py-2 mt-3 rounded"
                 disabled={loading}
             >
                 {loading ? "Loading..." : "Fetch Words"}
         </button>
-
-        {wordChoices.length > 0 && (
-            <button
-                onClick={handleProceedToWordSelection}
-                className="bg-green-500 text-white px-4 py-2 mt-3 rounded"
-            >
-                Select Words
-            </button>
         )}
 
-        <button
+        {!game.fetchWords && (
+          <button
           onClick={handleStartGame}
           className="mt-4 w-full rounded-lg bg-blue-600 px-6 py-3 text-lg font-semibold text-white shadow-md transition hover:bg-blue-700"
         >
           Start Game
         </button>
+        )}
+
       </div>
     </div>
   );

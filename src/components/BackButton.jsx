@@ -8,7 +8,7 @@ const BackButton = () => {
             onClick={() => navigate("/")} 
             className="mt-4 rounded-lg bg-blue-500 px-6 py-2 text-white shadow-md transition hover:bg-blue-600"
         >
-            ⬅ Back to Main Menu
+            ⬅ Back
         </button>
     );
 };

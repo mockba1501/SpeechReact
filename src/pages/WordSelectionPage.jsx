@@ -35,13 +35,22 @@ const WordSelection = () => {
                     </button>
                 ))}
             </div>
+            <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:justify-between">
             <button 
                 onClick={handleStartGame} 
-                className="mt-3 bg-blue-600 text-white px-4 py-2 rounded"
+                className="bg-green-600 text-white px-4 py-2 rounded"
                 disabled={words.length === 0}
             >
                 Start Game
             </button>
+
+            <button 
+            onClick={() => navigate(`/settings/${gameId}`)} 
+            className="bg-red-500 text-white px-4 py-2 rounded"
+            >
+                ⬅ Back
+            </button>
+            </div>
         </div>
     );
 };
