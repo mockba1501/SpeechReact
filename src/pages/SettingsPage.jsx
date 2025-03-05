@@ -26,7 +26,7 @@ const SettingsPage = () => {
     if (!game.fetchWords) return; // Skip API call if not needed
     
     setLoading(true);
-    /*
+    
     const payload = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -39,7 +39,7 @@ const SettingsPage = () => {
                   },
           "project": game.projectID }),
     }
-    //console.log(payload)
+    console.log(payload)
 
     try {
         const response = await fetch(game.fetchPath, payload );
@@ -52,22 +52,23 @@ const SettingsPage = () => {
         //Parse the internal JSON string
         try {
             const result = JSON.parse(cleanString);
-            //console.log(result);
+            setWordChoices(result); // Store received words
+            setWordsFetched(true);
+            console.log(result);
             } catch (error) {
             console.error("Error parsing JSON:", error);
         }
-
-        setWordChoices(data); // Store received words
+        
     } catch (error) {
         console.error("Error fetching words:", error);
     }
     setLoading(false);
-    */
+    
 
-    const data = wordList;
-    console.log(data);
-    setWordChoices(data);
-    setWordsFetched(true);
+    //const data = wordList;
+    //console.log(data);
+    //setWordChoices(data);
+    //setWordsFetched(true);
     
   };
 

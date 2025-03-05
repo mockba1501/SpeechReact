@@ -11,7 +11,9 @@ const Layout = () => {
             </Link>
 
             {/* Render current page */}
+            <div className="pt-16">  {/* Adjust padding to match header height */}
             <Outlet />
+            </div>
         </div>
     );
 };

@@ -20,9 +20,12 @@ const WordSelection = () => {
     };
 
     return (
-        <div className="mt-4">
-            <h3 className="font-bold">Select Words for the Game:</h3>
-            <div className="grid grid-cols-2 gap-2">
+    <div className="flex h-screen items-center justify-center px-3">
+        <div className="flex w-[850px] flex-col gap-6 rounded-lg bg-white px-10 py-14 shadow-xl max-md:px-6 max-md:py-10">
+            <h1 className="text-3xl font-bold text-gray-800">Select Words for the Game</h1>
+            <p className="text-gray-600">Choose words from the list below.</p>
+
+            <div className="grid sm:grid-cols-2 gap-2 grid-cols-1">
                 {words.map((item) => (
                     <button
                         key={item.word}
@@ -37,6 +40,13 @@ const WordSelection = () => {
             </div>
             <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:justify-between">
             <button 
+            onClick={() => navigate(`/settings/${gameId}`)} 
+            className="bg-red-500 text-white px-4 py-2 rounded"
+            >
+                ⬅ Back
+            </button>
+
+            <button 
                 onClick={handleStartGame} 
                 className="bg-green-600 text-white px-4 py-2 rounded"
                 disabled={words.length === 0}
@@ -44,14 +54,9 @@ const WordSelection = () => {
                 Start Game
             </button>
 
-            <button 
-            onClick={() => navigate(`/settings/${gameId}`)} 
-            className="bg-red-500 text-white px-4 py-2 rounded"
-            >
-                ⬅ Back
-            </button>
             </div>
         </div>
+    </div>
     );
 };
 
