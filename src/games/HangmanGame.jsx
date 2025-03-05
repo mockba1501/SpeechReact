@@ -1,7 +1,7 @@
 // Importing necessary components and context
-import GameBoard from "../components/GameBoard";
-import GameOverModal from "../components/GameOverModal";
-import HangmanIllustration from "../components/HangmanIllustration";
+import GameBoard from "../components/GameRelated/GameBoard";
+import GameOverModal from "../components/GameRelated/GameOverModal";
+import HangmanIllustration from "../components/GameRelated/HangmanIllustration";
 import { GameProvider } from "../context/GameContext";
 
 // Main application component

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { games, gameSettings } from "../constants/gameData";
-import { wordList } from "../constants";
+import { wordListCustom } from "../constants";
 
 const SettingsPage = () => {
   const { gameId } = useParams();
@@ -25,6 +25,7 @@ const SettingsPage = () => {
     console.log("Trying to fetch words...");
     if (!game.fetchWords) return; // Skip API call if not needed
     
+    /*
     setLoading(true);
     
     const payload = {
@@ -63,12 +64,12 @@ const SettingsPage = () => {
         console.error("Error fetching words:", error);
     }
     setLoading(false);
-    
-
-    //const data = wordList;
-    //console.log(data);
-    //setWordChoices(data);
-    //setWordsFetched(true);
+    */
+    // Temporary solution to fetch words
+    const data = wordListCustom;
+    console.log(data);
+    setWordChoices(data);
+    setWordsFetched(true);
     
   };
 

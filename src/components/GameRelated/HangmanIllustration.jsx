@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import GameContext from "../context/GameContext";
+import GameContext from "../../context/GameContext";
 
 const HangmanIllustration = () => {
     //Extract the wrong guesses value from the GameContext

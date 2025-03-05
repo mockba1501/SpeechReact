@@ -1,10 +1,15 @@
 import { useContext, useEffect, useRef, useState } from "react";
 
-//Game Logic
-import GameContext from "../context/GameContext";
+//Core Game Logic
+import GameContext from "../../context/GameContext";
 import GameKeyboard from "./GameKeyboard";
-import useVoiceRecognition from "../hooks/useVoiceRecognition";
-import {wordList} from "../constants";
+import useVoiceRecognition from "../../hooks/useVoiceRecognition";
+import {wordList} from "../../constants";
+//New logic to be implemented
+//import ScoringPanel from "./ScoringPanel";
+//import DifficultyControls from "./DifficultyControls";
+//import HintDisplay from "./HintDisplay";
+//import GameFeedback from "./GameFeedback";
 
 //Styling
 import Switch from '@mui/material/Switch';
@@ -14,7 +19,7 @@ import IconButton from '@mui/material/IconButton';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Typography from '@mui/material/Typography';
 
-const GameBoard = () => {
+const HangmanBoardV2 = () => {
     const {currentWord,
             setCurrentWord,
             correctLetters,
@@ -130,12 +135,18 @@ const GameBoard = () => {
             </ul>
 
             {/* Display the hint */}
+            {/** To be implemented if needed!!
+             *  <HintDisplay currentWord={currentWord} hintRef={hintRef} />
+             */}
             <h4 className="mb-4 text-center text-lg font-medium max-md:text-base">
                 Hint:{" "}
                 <b ref={hintRef} className="font-semibold text-neutral-700"></b>
             </h4>
 
             {/* Display the number of incorrect guesses and max guesses */}
+            {/**
+             * <ScoringPanel score={score} wrongGuesses={wrongGuesses} maxGuesses={maxGuesses} />
+             */}
             <h4 className="mb-4 text-center text-lg font-medium text-neutral-800 max-md:text-base">
                 Incorrect guesses:{" "}
                 <b className="font-bold text-red-500">
@@ -168,8 +179,12 @@ const GameBoard = () => {
             </>
             )}
 
+            {/** 
+             * {showFeedback && <GameFeedback score={score} />}
+             */}
+
         </div>
     );
 }
 
-export default GameBoard;
+export default HangmanBoardV2;

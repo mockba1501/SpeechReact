@@ -7,7 +7,7 @@ import WordSelectionPage from "./pages/WordSelectionPage";
 import HangmanGame from "./games/HangmanGame";
 import Hangman2 from "./games/Hangman2";
 
-import Layout from "./components/Layout";
+import Layout from "./components/Layout/Layout";
 import App from "./App";
 //import WordPuzzleGame from "./games/wordPuzzle/WordPuzzleGame";
 
