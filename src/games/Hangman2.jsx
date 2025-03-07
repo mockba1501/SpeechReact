@@ -15,9 +15,9 @@ const Hangman2 = () => {
           <div className="flex h-screen items-center justify-center px-3">
             <div className="flex w-[850px] items-end justify-between gap-16 rounded-lg bg-white px-10 py-14 shadow-xl max-md:flex-col max-md:items-center max-md:px-2.5 max-md:py-8">
               <HangmanIllustration />
-              <HangmanBoardV2 />
+              <HangmanBoardV2 settings={settings} words={words}/>
             </div>
-            <GameOverModal />
+            <GameOverModal isVersion2={true}/>
           </div>
         </GameProvider>
       );

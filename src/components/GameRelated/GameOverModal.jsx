@@ -1,11 +1,19 @@
 import { useContext } from "react";
+
 import GameContext from "../../context/GameContext";
 
-const GameOverModal = () => {
+const GameOverModal = ({isVersion2 = false}) => {
     const {currentWord, 
             isGameWon,
             showModal,
-        resetGameBoard} = useContext(GameContext);  
+            handleNextWord,
+            handleRestart,
+            handleStopPlaying,
+            allWordsCompleted,
+            resetGameBoard
+        } = useContext(GameContext);
+        
+        console.log("All words completed: ", allWordsCompleted);
 
     return (
         //Model container with conditional visibility
@@ -30,13 +38,50 @@ const GameOverModal = () => {
                 <b className="font-bold uppercase text-emerald-700">{" "} {showModal && currentWord}</b>
                 </p>
                 
-                {/* Display Play Again button */}
+                {/* Display Play Again button 
                 <button
                 onClick={resetGameBoard}
                 className="max-lg:2 rounded-md border bg-emerald-700 px-5 py-2.5 font-medium uppercase text-white hover:bg-emerald-600 max-lg:px-4"
                 >
                 Play Again
                 </button>
+                */}
+                <div className="flex justify-center gap-4"> {/* Flex container with gap */}
+                {isVersion2 ? (
+                    // Version 2: Sequential Words Game
+                    allWordsCompleted ? (
+                        <button
+                            onClick={handleStopPlaying}
+                            className="bg-blue-500 text-white px-4 py-2 rounded"
+                        >
+                            Go Back to Main Menu
+                        </button>
+                    ) : (
+                        <button
+                            onClick={handleNextWord}
+                            className="bg-blue-500 text-white px-4 py-2 rounded mr-2"
+                        >
+                            Next Word
+                        </button>
+                    )
+                ) : (
+                    // Version 1: Original Game
+                    <>
+                        <button
+                            onClick={handleRestart}
+                            className="bg-blue-500 text-white px-4 py-2 rounded mr-2"
+                        >
+                            Play Again
+                        </button>
+                        <button
+                            onClick={handleStopPlaying}
+                            className="bg-red-500 text-white px-4 py-2 rounded"
+                        >
+                            Stop Playing
+                        </button>
+                    </>
+                )}
+                </div>
             </div>
         </div>
     );

@@ -1,4 +1,5 @@
 import { createContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 //create a context for the game
 const GameContext = createContext();
@@ -14,6 +15,11 @@ export const GameProvider = ({ children }) => {
     const [showModal, setShowModal] = useState(false);
     const [isGameReset, setIsGameReset] = useState(false);
     const [isMicrophoneEnabled, setIsMicrophoneEnabled] = useState(true);
+    const [wordIndex, setWordIndex] = useState(0);
+    const [isNextWordReady, setIsNextWordReady] = useState(false);
+    const [allWordsCompleted, setAllWordsCompleted] = useState(false);
+    
+    const navigate = useNavigate();
 
     //function to reset the game to its initial state
     const resetGameBoard = () => {
@@ -26,6 +32,30 @@ export const GameProvider = ({ children }) => {
         setShowModal(false);
         setIsGameReset(true);
         setIsMicrophoneEnabled(true);
+        setWordIndex(0);
+        setIsNextWordReady(false);
+        setAllWordsCompleted(false);
+    };
+
+    const handleNextWord = () => {
+        setIsNextWordReady(true);
+        setShowModal(false);
+      //  resetGameBoard();
+    };
+
+    const handleRestart = () => {
+        setAllWordsCompleted(false); // Reset completion state
+        //setIsNextWordReady(true); // Restart the game
+        setShowModal(false);
+      //  resetGameBoard();
+    };
+
+    const handleStopPlaying = () => {
+        // Navigate to the main menu or another screen
+        resetGameBoard();
+        setShowModal(false);
+        
+        navigate("/");
     };
 
     //Provide the state and functions to the children components
@@ -50,7 +80,16 @@ export const GameProvider = ({ children }) => {
                 setIsGameReset,
                 resetGameBoard,
                 isMicrophoneEnabled,
-                setIsMicrophoneEnabled
+                setIsMicrophoneEnabled,
+                wordIndex,
+                setWordIndex,
+                isNextWordReady,
+                setIsNextWordReady,
+                allWordsCompleted,
+                setAllWordsCompleted,
+                handleNextWord,
+                handleRestart,
+                handleStopPlaying,
             }}>
             {children}
             </GameContext.Provider>
