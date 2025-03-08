@@ -40,8 +40,6 @@ const HangmanBoardV2 = ({words}) => {
             setIsMicrophoneEnabled,
             wordIndex,
             setWordIndex,
-            isNextWordReady,
-            setIsNextWordReady,
             setAllWordsCompleted
              } = useContext(GameContext);    
     const { recognizedText, isListening, error, startListening } = useVoiceRecognition();
@@ -49,11 +47,12 @@ const HangmanBoardV2 = ({words}) => {
     //Reference for the hint element
     const hintRef = useRef(null);
     const maxGuesses = 6;
-    console.log("Word index ", wordIndex)
+    
     //Effect to initialize the game board with a random word
     useEffect(() => {
-      console.log("Selected Words:", words, " word index ", wordIndex);
+      console.log("Selected Words:", words, " current word index ", wordIndex);
 
+        resetGameState();
         if(words.length > 0 && wordIndex < words.length)
         {
             console.log("Assigning new word to the game board!!!");
@@ -65,20 +64,13 @@ const HangmanBoardV2 = ({words}) => {
             setCorrectLetters(new Array(word.length).fill(""));
             setIsGameReset(false);
         }
-    }, [wordIndex, isGameReset, setCorrectLetters, setCurrentWord, setIsGameReset]);
 
-    useEffect(() => {
-        if (isNextWordReady) {
-            if (wordIndex < words.length - 1) {
-                setWordIndex((prevIndex) => prevIndex + 1); // Move to the next word
-            } else {
-                console.log("All words completed!");
-                setAllWordsCompleted(true); // Mark all words as completed
-            }
-            setIsNextWordReady(false); // Reset the flag
-            resetGameState(); // Reset the game state for the new word
+        if(wordIndex === words.length - 1)
+        {
+            console.log("All words are completed");
+            setAllWordsCompleted(true);
         }
-    }, [isNextWordReady]);
+    }, [wordIndex]); // I only need to activiate this effect when the wordIndex changes
 
     //Effect to check game status (win/lose) after each guess based on correct letters
     useEffect(() => {

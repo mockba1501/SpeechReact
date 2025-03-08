@@ -40,6 +40,7 @@ export const GameProvider = ({ children }) => {
     const handleNextWord = () => {
         setIsNextWordReady(true);
         setShowModal(false);
+        setWordIndex((prev) => prev + 1);
       //  resetGameBoard();
     };
 
