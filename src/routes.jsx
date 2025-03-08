@@ -6,6 +6,7 @@ import WordSelectionPage from "./pages/WordSelectionPage";
 
 import HangmanGame from "./games/HangmanGame";
 import Hangman2 from "./games/Hangman2";
+import Hangman3 from "./games/Hangman3";
 
 import Layout from "./components/Layout/Layout";
 import App from "./App";
@@ -19,6 +20,7 @@ const AppRoutes = () => (
         <Route path="/settings/:gameId" element={<SettingsPage />} />
         <Route path="/game/hangman" element={<HangmanGame />} />
         <Route path="/game/hangman2" element={<Hangman2 />} />
+        <Route path="/game/hangman3" element={<Hangman3 />} />
         <Route path="/word-selection/:gameId" element={<WordSelectionPage />} />
     {/*    <Route path="/game/word-puzzle" element={<WordPuzzleGame />} />
         */}
