@@ -16,7 +16,6 @@ export const GameProvider = ({ children }) => {
     const [isGameReset, setIsGameReset] = useState(false);
     const [isMicrophoneEnabled, setIsMicrophoneEnabled] = useState(true);
     const [wordIndex, setWordIndex] = useState(0);
-    const [isNextWordReady, setIsNextWordReady] = useState(false);
     const [allWordsCompleted, setAllWordsCompleted] = useState(false);
     
     const navigate = useNavigate();
@@ -33,12 +32,10 @@ export const GameProvider = ({ children }) => {
         setIsGameReset(true);
         setIsMicrophoneEnabled(true);
         setWordIndex(0);
-        setIsNextWordReady(false);
         setAllWordsCompleted(false);
     };
 
     const handleNextWord = () => {
-        setIsNextWordReady(true);
         setShowModal(false);
         setWordIndex((prev) => prev + 1);
       //  resetGameBoard();
@@ -46,9 +43,8 @@ export const GameProvider = ({ children }) => {
 
     const handleRestart = () => {
         setAllWordsCompleted(false); // Reset completion state
-        //setIsNextWordReady(true); // Restart the game
         setShowModal(false);
-      //  resetGameBoard();
+        resetGameBoard();
     };
 
     const handleStopPlaying = () => {
@@ -84,8 +80,6 @@ export const GameProvider = ({ children }) => {
                 setIsMicrophoneEnabled,
                 wordIndex,
                 setWordIndex,
-                isNextWordReady,
-                setIsNextWordReady,
                 allWordsCompleted,
                 setAllWordsCompleted,
                 handleNextWord,
