@@ -48,8 +48,10 @@ const WordSelection = () => {
 
             <button 
                 onClick={handleStartGame} 
-                className="bg-green-600 text-white px-4 py-2 rounded"
-                disabled={words.length === 0}
+                className={`bg-green-600 text-white px-4 py-2 rounded ${
+                    selectedWords.length === 0 ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+                disabled={selectedWords.length === 0} // Disable when no words are selected
             >
                 Start Game
             </button>
