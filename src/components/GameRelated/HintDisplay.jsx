@@ -1,45 +1,53 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import IconButton from '@mui/material/IconButton';
+import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 
 const HintDisplay = ({ currentWord, difficulty, hintDescription, hintImage }) => {
+    const [isWordVisible, setIsWordVisible] = useState(false);
+
     const playWordSound = (word) => {
         const utterance = new SpeechSynthesisUtterance(word);
         speechSynthesis.speak(utterance);
     };
 
     useEffect(() => {
-        if (difficulty === 'easy') {
+        console.log("Current Difficulty is ", difficulty)
+        if (difficulty === 'Easy') {
             // Show the word and play the sound
-            displayWord(currentWord);
+            setIsWordVisible(true);
             playWordSound(currentWord);
-        } else if (difficulty === 'medium') {
+        } else if (difficulty === 'Medium') {
             // Show the word for a few seconds, then hide it
-            displayWord(currentWord);
+            setIsWordVisible(true);
             playWordSound(currentWord);
             const timer = setTimeout(() => {
-                hideWord();
+                setIsWordVisible(false);
             }, 3000);
             return () => clearTimeout(timer);
-        } else if (difficulty === 'hard') {
-            // Only play the word sound
+        } else if (difficulty === 'Hard') {
+            setIsWordVisible(false);
             playWordSound(currentWord);
         }
     }, [currentWord, difficulty]);
 
-    const displayWord = (word) => {
-        // Function to display the word (you can manage visibility here)
-        // This could update a state to trigger a re-render
-    };
-
-    const hideWord = () => {
-        // Function to hide the word
-        // This could update a state to trigger a re-render
-    };
-
     return (
-        <div>
+
+        <div className="flex flex-col items-center">
+            <div className="flex items-center gap-2">
+                <h4>Pronounce the word, Click to Listen:</h4>
+                <IconButton onClick={() => playWordSound(currentWord)} color="primary">
+                    <VolumeUpIcon fontSize="large" />
+                </IconButton>
+            </div>
+
+            {isWordVisible && (
             <h4 className="mb-4 text-center text-lg font-medium max-md:text-base">
-                Hint: {hintDescription}
+                Hint the word is: <b>{currentWord}</b>
             </h4>
+            )}
+            {/*<h4 className="mb-4 text-center text-lg font-medium max-md:text-base">
+                Hint: {hintDescription}
+            </h4>*/}
             {/*hintImage && <img src={hintImage} alt="Hint" />*/}
         </div>
     );

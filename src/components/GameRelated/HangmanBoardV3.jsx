@@ -8,7 +8,7 @@ import {wordList} from "../../constants";
 //New logic to be implemented
 //import ScoringPanel from "./ScoringPanel";
 //import DifficultyControls from "./DifficultyControls";
-//import HintDisplay from "./HintDisplay";
+import HintDisplay from "./HintDisplay";
 //import GameFeedback from "./GameFeedback";
 
 //Styling
@@ -45,8 +45,8 @@ const HangmanBoardV2 = ({settings, words}) => {
     const { recognizedText, isListening, error, startListening } = useVoiceRecognition();
     
     //Reference for the hint element
-    const hintRef = useRef(null);
-    //const [hintDescription, setHintDescription] = useState("");
+    //const hintRef = useRef(null);
+    const [hintDescription, setHintDescription] = useState("");
     const maxGuesses = 6;
     
     //Effect to initialize the game board with a random word
@@ -59,8 +59,8 @@ const HangmanBoardV2 = ({settings, words}) => {
             console.log("Assigning new word to the game board!!!");
             //Get a random word from the word list
             const {word, hint} = words[wordIndex];
-            hintRef.current.innerText = hint;
-            //setHintDescription(hint);
+            //hintRef.current.innerText = hint;
+            setHintDescription(hint);
             console.log("Current word is: ", word);
             setCurrentWord(word);
             setCorrectLetters(new Array(word.length).fill(""));
@@ -166,26 +166,27 @@ const HangmanBoardV2 = ({settings, words}) => {
             </ul>
 
             {/* Display the hint */}
-            {/* 
+             
             <HintDisplay 
                 currentWord={currentWord} 
                 difficulty={settings.difficulty} 
                 hintDescription={hintDescription} 
-               hintImage={hintImage} 
-            />*/}
-             {
+             
+            />
+            {/*  hintImage={hintImage} */} 
+            {/* {
             <h4 className="mb-4 text-center text-lg font-medium max-md:text-base">
                 Hint:{" "}
                 <b ref={hintRef} className="font-semibold text-neutral-700"></b>
             </h4>
-            }
+            }*/}
 
             {/* Display the number of incorrect guesses and max guesses */}
             {/**
              * <ScoringPanel score={score} wrongGuesses={wrongGuesses} maxGuesses={maxGuesses} />
              */}
             <h4 className="mb-4 text-center text-lg font-medium text-neutral-800 max-md:text-base">
-                Incorrect guesses:{" "}
+                Incorrect attempts:{" "}
                 <b className="font-bold text-red-500">
                 {wrongGuesses} / {maxGuesses}
                 </b>
@@ -207,7 +208,7 @@ const HangmanBoardV2 = ({settings, words}) => {
                     <MicRoundedIcon fontSize="large" />
                 </IconButton>
                 <Typography variant="body2" color={isListening ? "error" : "textSecondary"}>
-                    {isListening ? "Listening..." : "Press the mic button to say a Letter"}
+                    {isListening ? "Listening..." : "Press the mic button to pronounce the word"}
                 </Typography>
                 {incorrectLetters.length>0 && (<h4>
                     Incorrect Letters: {incorrectLetters.join(", ")}
