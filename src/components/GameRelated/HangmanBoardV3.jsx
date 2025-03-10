@@ -22,10 +22,6 @@ import Typography from '@mui/material/Typography';
 const HangmanBoardV3 = ({settings, words}) => {
     const {currentWord,
             setCurrentWord,
-            correctLetters,
-            setCorrectLetters,
-            incorrectLetters,
-            setIncorrectLetters,
             clickedKeys,
             setClickedKeys,
             wrongGuesses,
@@ -47,24 +43,18 @@ const HangmanBoardV3 = ({settings, words}) => {
     const [userSpelling, setUserSpelling] = useState([]);
 
     //Reference for the hint element
-    //const hintRef = useRef(null);
     const [hintDescription, setHintDescription] = useState("");
     const maxGuesses = 6;
     //Effect to initialize the game board with a random word
     useEffect(() => {
-      //console.log("Selected Words:", words, " current word index ", wordIndex);
-
         resetGameState();
+
         if(words.length > 0 && wordIndex < words.length)
         {
-            //console.log("Assigning new word to the game board!!!");
-            //Get a random word from the word list
             const {word, hint} = words[wordIndex];
-            //hintRef.current.innerText = hint;
             setHintDescription(hint);
             console.log("Current word is: ", word);
             setCurrentWord(word);
-            //setCorrectLetters(new Array(word.length).fill(""));
             setIsGameReset(false);
         }
 
@@ -78,15 +68,14 @@ const HangmanBoardV3 = ({settings, words}) => {
     //Logic to detect the correct letters and their positions
     useEffect(() => {
         //check if recognized word or currentWord is not null or empty
-        if(!recognizedWord || !currentWord) {
+        if(!recognizedWord || !currentWord  || isGameReset || recognizedWord.trim() === "") {
             setCategorizedLetters([]);
             return;
         }
         
         const categorized = categorizeLetters(currentWord, recognizedWord);
-        console.log("Categorized is ", categorized);
-
         setCategorizedLetters(categorized);
+
         // Check if the recognized word matches the current word
        checkMatchingWords(currentWord, recognizedWord);
 
@@ -95,20 +84,25 @@ const HangmanBoardV3 = ({settings, words}) => {
     
       // Effect to categorize letters when the user completes spelling
       useEffect(() => {
-        console.log("Trigger: User Spelling Changed!")
-        if (userSpelling.length === currentWord.length) {
-            console.log("Reset Categorize Letters!")
+        const spelledWord = userSpelling.join("");
 
-            const categorized = categorizeLetters(currentWord, userSpelling.join(""));
+        if(!spelledWord || !currentWord  || isGameReset || spelledWord.trim() === "") {
+            setCategorizedLetters([]);
+            return;
+        }
+        
+        if (userSpelling.length === currentWord.length) {
+            const categorized = categorizeLetters(currentWord, spelledWord);
             setCategorizedLetters(categorized);
 
             // Check if the recognized word matches the current word
-            checkMatchingWords(currentWord, userSpelling.join(""));
+            checkMatchingWords(currentWord, spelledWord);
         }
     }, [userSpelling]);
 
     const checkMatchingWords = (currentWord, checkWord) =>
     {
+        console.log("Checking Words ", currentWord, " ", checkWord);
         if (checkWord.toLowerCase() === currentWord.toLowerCase()) {
             setIsGameWon(true);
             setShowModal(true);
@@ -120,29 +114,9 @@ const HangmanBoardV3 = ({settings, words}) => {
             }
         }
     }
-    /*//Effect to check game status (win/lose) after each guess based on correct letters
-    useEffect(() => {
-        if(currentWord && correctLetters.length)
-        {
-            console.log("Checking game status and current word is: ", currentWord);
-            //if number of wrong guesses is greater than or equal to the max guesses, the game is lost
-            if(wrongGuesses >= maxGuesses)
-            {
-                setShowModal(true);
-                setIsGameWon(false);
-            }
-            else if(correctLetters.join("") === currentWord)
-            {
-                setShowModal(true);
-                setIsGameWon(true);
-            }
-        }
-    }, [correctLetters, wrongGuesses, currentWord, setIsGameWon, setShowModal]);
-    */
+
     const resetGameState = () => {
         console.log("Resetting game state is called!!!");
-        //setCorrectLetters([]);
-        //setIncorrectLetters([]);
         setClickedKeys([]);
         setWrongGuesses(0);
         setIsGameWon(false);
@@ -185,41 +159,18 @@ const HangmanBoardV3 = ({settings, words}) => {
     };
 
     const handleClickedKey = (clickedKey) => {
-        console.log("UserSpelling array size before modifications",userSpelling.length, userSpelling);
         if(userSpelling.length < currentWord.length) {
             // Reset categorization if the user starts typing again
-            console.log("UserSpelling array size ",userSpelling.length, userSpelling);
             if (userSpelling.length === 0) {
                 setCategorizedLetters([]);
             }
             setUserSpelling((prevSpelling) => [...prevSpelling, clickedKey]);
         }
         else{
-            setUserSpelling(clickedKey);
+            setUserSpelling([clickedKey]);
             setCategorizedLetters([]);
         }
     };
-
-    /*
-    //Handle Key clicks and update the game state accordingly
-    const handleClickedKey = (clickedKey) => {
-        if(currentWord.includes(clickedKey))
-        {
-            const updatedCorrectLetters = correctLetters.map((letter,index)=>
-                currentWord[index] === clickedKey ? clickedKey : letter
-            );
-            setCorrectLetters(updatedCorrectLetters);
-            console.log("Correct Letters: ",updatedCorrectLetters);
-        }
-        else
-        {
-            setIncorrectLetters((previousLetters) => [...previousLetters, clickedKey]);
-            setWrongGuesses((previousGuesses) => previousGuesses + 1);
-        }
-
-        setClickedKeys((previousKeys) => [...previousKeys, clickedKey]);     
-    };
-    */
 
     // Toggle keyboard visibility
     const toggleMicrophone = () => {
@@ -228,13 +179,6 @@ const HangmanBoardV3 = ({settings, words}) => {
         setUserSpelling([]);
     };
 
-    /*
-    useEffect(() => {
-        if (recognizedText) {
-                handleClickedKey(recognizedText);
-        }
-    }, [recognizedText]);
-    */
     return (
         <div className="flex flex-col items-center">
             {/* Position the Switch inside the game's white container */}
@@ -322,10 +266,6 @@ const HangmanBoardV3 = ({settings, words}) => {
                 <Typography variant="body2" color={isListening ? "error" : "textSecondary"}>
                     {isListening ? "Listening..." : "Press the mic button to pronounce the word"}
                 </Typography>
-                {incorrectLetters.length>0 && (<h4>
-                    Incorrect Letters: {incorrectLetters.join(", ")}
-                </h4>)
-                }
             </>
             )}
 
