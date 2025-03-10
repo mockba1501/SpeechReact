@@ -44,6 +44,7 @@ const HangmanBoardV3 = ({settings, words}) => {
              } = useContext(GameContext);    
     const { recognizedWord, isListening, error, startListening } = useFullWordRecognition();
     const [categorizedLetters, setCategorizedLetters] = useState([]);
+    const [userSpelling, setUserSpelling] = useState([]);
 
     //Reference for the hint element
     //const hintRef = useRef(null);
@@ -63,7 +64,7 @@ const HangmanBoardV3 = ({settings, words}) => {
             setHintDescription(hint);
             console.log("Current word is: ", word);
             setCurrentWord(word);
-            setCorrectLetters(new Array(word.length).fill(""));
+            //setCorrectLetters(new Array(word.length).fill(""));
             setIsGameReset(false);
         }
 
@@ -81,58 +82,44 @@ const HangmanBoardV3 = ({settings, words}) => {
             setCategorizedLetters([]);
             return;
         }
-        const targetArray = currentWord.toLowerCase().split('');
-        const spokenArray = recognizedWord.toLowerCase().split('');
-        const categorized = new Array(targetArray.length).fill(null); // Initialize with null size same as target
-        const matchedIndices = new Set(); // Track indices in targetArray that have been matched
-
-        spokenArray.forEach((letter, index) => {
-            console.log("Letter is ", letter);
-            if (targetArray[index] === letter) {
-                categorized[index] = { letter, color: 'green' }; // Correct letter, correct position
-                matchedIndices.add(index);
-            }
-        });
-        console.log("Categorized array ", categorized);
-        // Second pass: Check for correct letters in the wrong position (yellow)
-        spokenArray.forEach((letter, index) => {
-            if (categorized[index]) return; // Skip if already categorized as green
-
-            const targetIndex = targetArray.findIndex(
-                (targetLetter, i) => targetLetter === letter && !matchedIndices.has(i)
-            );
-
-            if (targetIndex !== -1) {
-                categorized[index] = { letter, color: 'yellow' };
-                matchedIndices.add(targetIndex); // Mark this index as matched
-            } else {
-                categorized[index] = { letter, color: 'red' }; // Incorrect letter
-            }
-        });
+        
+        const categorized = categorizeLetters(currentWord, recognizedWord);
         console.log("Categorized is ", categorized);
 
         setCategorizedLetters(categorized);
+        // Check if the recognized word matches the current word
+       checkMatchingWords(currentWord, recognizedWord);
+
     }, [recognizedWord]);
     
-    useEffect(()=>{
-        //There seem to be an issue with the categorizedLetters state not changing when executing this useEffect!
-        console.log("Recognized word is ", recognizedWord /*, "categorizedLetters: ", categorizedLetters*/);
+    
+      // Effect to categorize letters when the user completes spelling
+      useEffect(() => {
+        console.log("Trigger: User Spelling Changed!")
+        if (userSpelling.length === currentWord.length) {
+            console.log("Reset Categorize Letters!")
 
-        if(recognizedWord){ 
-            if(recognizedWord.toLowerCase() === currentWord.toLowerCase()){
-                setIsGameWon(true);
+            const categorized = categorizeLetters(currentWord, userSpelling.join(""));
+            setCategorizedLetters(categorized);
+
+            // Check if the recognized word matches the current word
+            checkMatchingWords(currentWord, userSpelling.join(""));
+        }
+    }, [userSpelling]);
+
+    const checkMatchingWords = (currentWord, checkWord) =>
+    {
+        if (checkWord.toLowerCase() === currentWord.toLowerCase()) {
+            setIsGameWon(true);
+            setShowModal(true);
+        } else {
+            setWrongGuesses((prev) => prev + 1);
+            if (wrongGuesses + 1 >= maxGuesses) {
                 setShowModal(true);
-            }
-            else {
-                setWrongGuesses((previousGuesses) => previousGuesses + 1);
-                if(wrongGuesses + 1 >+ maxGuesses){
-                    setShowModal(true);
-                    setIsGameWon(false);
-                }
+                setIsGameWon(false);
             }
         }
-    }, [recognizedWord]);
-    
+    }
     /*//Effect to check game status (win/lose) after each guess based on correct letters
     useEffect(() => {
         if(currentWord && correctLetters.length)
@@ -154,15 +141,66 @@ const HangmanBoardV3 = ({settings, words}) => {
     */
     const resetGameState = () => {
         console.log("Resetting game state is called!!!");
-        setCorrectLetters([]);
-        setIncorrectLetters([]);
+        //setCorrectLetters([]);
+        //setIncorrectLetters([]);
         setClickedKeys([]);
         setWrongGuesses(0);
         setIsGameWon(false);
         setIsGameReset(true); // Trigger the useEffect to initialize the new word
         setCategorizedLetters([]);
+        setUserSpelling([]);
     };
 
+    const categorizeLetters = (targetWord, userWord) => {
+        const targetArray = targetWord.toLowerCase().split("");
+        const userArray = userWord.toLowerCase().split("");
+        const categorized = new Array(targetArray.length).fill(null);
+        const matchedIndices = new Set(); // Track indices in targetArray that have been matched
+    
+        // First pass: Check for correct letters in the correct position (green)
+        userArray.forEach((letter, index) => {
+            if (targetArray[index] === letter) {
+                categorized[index] = { letter, color: "green" };
+                matchedIndices.add(index); // Mark this index as matched
+            }
+        });
+    
+        // Second pass: Check for correct letters in the wrong position (yellow)
+        userArray.forEach((letter, index) => {
+            if (categorized[index]) return; // Skip if already categorized as green
+    
+            const targetIndex = targetArray.findIndex(
+                (targetLetter, i) => targetLetter === letter && !matchedIndices.has(i)
+            );
+    
+            if (targetIndex !== -1) {
+                categorized[index] = { letter, color: "yellow" };
+                matchedIndices.add(targetIndex); // Mark this index as matched
+            } else {
+                categorized[index] = { letter, color: "red" }; // Incorrect letter
+            }
+        });
+    
+        return categorized;
+    };
+
+    const handleClickedKey = (clickedKey) => {
+        console.log("UserSpelling array size before modifications",userSpelling.length, userSpelling);
+        if(userSpelling.length < currentWord.length) {
+            // Reset categorization if the user starts typing again
+            console.log("UserSpelling array size ",userSpelling.length, userSpelling);
+            if (userSpelling.length === 0) {
+                setCategorizedLetters([]);
+            }
+            setUserSpelling((prevSpelling) => [...prevSpelling, clickedKey]);
+        }
+        else{
+            setUserSpelling(clickedKey);
+            setCategorizedLetters([]);
+        }
+    };
+
+    /*
     //Handle Key clicks and update the game state accordingly
     const handleClickedKey = (clickedKey) => {
         if(currentWord.includes(clickedKey))
@@ -179,13 +217,15 @@ const HangmanBoardV3 = ({settings, words}) => {
             setWrongGuesses((previousGuesses) => previousGuesses + 1);
         }
 
-        setClickedKeys((previousKeys) => [...previousKeys, clickedKey]);
-        
+        setClickedKeys((previousKeys) => [...previousKeys, clickedKey]);     
     };
+    */
 
     // Toggle keyboard visibility
     const toggleMicrophone = () => {
         setIsMicrophoneEnabled(!isMicrophoneEnabled);
+        setCategorizedLetters([]);
+        setUserSpelling([]);
     };
 
     /*
@@ -222,16 +262,17 @@ const HangmanBoardV3 = ({settings, words}) => {
                 {currentWord?.split("").map((_, index) => {
 
                     const categorizedLetter = categorizedLetters[index]; // Get the current letter object
+                    const userLetter = userSpelling[index];
                     return (
-                    <li
-                        key={index}
-                        className={`-mt-10 mb-10 w-7 text-center text-3xl font-semibold uppercase ${
-                            !categorizedLetter && "mt-0 border border-b-2 border-black"
-                        }`}
-                        style={{ color: categorizedLetter?.color }} // Apply color from categorizedLetters
-                    >
-                        {categorizedLetter?.letter || ""} {/* Display letter from categorizedLetters */}
-                    </li>
+                        <li
+                            key={index}
+                            className={`-mt-10 mb-10 w-7 text-center text-3xl font-semibold uppercase ${
+                                !categorizedLetter && "mt-0 border border-b-2 border-black"
+                            }`}
+                            style={{ color: categorizedLetter?.color || 'black' }} // Black while typing, colored after categorization
+                        >
+                            {userLetter || ""}
+                        </li>
                     )}
                 )}
             </ul>
@@ -265,7 +306,7 @@ const HangmanBoardV3 = ({settings, words}) => {
             
              {/* Display the game keyboard (hidden if microphone is enabled) */}
              {!isMicrophoneEnabled && (
-                <GameKeyboard handleClickedKey={handleClickedKey} clickedKeys={clickedKeys} />
+                <GameKeyboard handleClickedKey={handleClickedKey} clickedKeys={clickedKeys} />  
             )}
 
             {/* Show/Hide microphone button*/}
