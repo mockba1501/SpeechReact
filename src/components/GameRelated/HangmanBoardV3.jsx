@@ -3,8 +3,8 @@ import { useContext, useEffect, useRef, useState } from "react";
 //Core Game Logic
 import GameContext from "../../context/GameContext";
 import GameKeyboard from "./GameKeyboard";
-import useVoiceRecognition from "../../hooks/useVoiceRecognition";
-import {wordList} from "../../constants";
+import useFullWordRecognition from "../../hooks/useFullWordRecognition";
+
 //New logic to be implemented
 //import ScoringPanel from "./ScoringPanel";
 //import DifficultyControls from "./DifficultyControls";
@@ -19,7 +19,7 @@ import IconButton from '@mui/material/IconButton';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Typography from '@mui/material/Typography';
 
-const HangmanBoardV2 = ({settings, words}) => {
+const HangmanBoardV3 = ({settings, words}) => {
     const {currentWord,
             setCurrentWord,
             correctLetters,
@@ -42,21 +42,21 @@ const HangmanBoardV2 = ({settings, words}) => {
             setWordIndex,
             setAllWordsCompleted
              } = useContext(GameContext);    
-    const { recognizedText, isListening, error, startListening } = useVoiceRecognition();
-    
+    const { recognizedWord, isListening, error, startListening } = useFullWordRecognition();
+    const [categorizedLetters, setCategorizedLetters] = useState([]);
+
     //Reference for the hint element
     //const hintRef = useRef(null);
     const [hintDescription, setHintDescription] = useState("");
     const maxGuesses = 6;
-    
     //Effect to initialize the game board with a random word
     useEffect(() => {
-      console.log("Selected Words:", words, " current word index ", wordIndex);
+      //console.log("Selected Words:", words, " current word index ", wordIndex);
 
         resetGameState();
         if(words.length > 0 && wordIndex < words.length)
         {
-            console.log("Assigning new word to the game board!!!");
+            //console.log("Assigning new word to the game board!!!");
             //Get a random word from the word list
             const {word, hint} = words[wordIndex];
             //hintRef.current.innerText = hint;
@@ -74,7 +74,66 @@ const HangmanBoardV2 = ({settings, words}) => {
         }
     }, [wordIndex]); // I only need to activiate this effect when the wordIndex changes
 
-    //Effect to check game status (win/lose) after each guess based on correct letters
+    //Logic to detect the correct letters and their positions
+    useEffect(() => {
+        //check if recognized word or currentWord is not null or empty
+        if(!recognizedWord || !currentWord) {
+            setCategorizedLetters([]);
+            return;
+        }
+        const targetArray = currentWord.toLowerCase().split('');
+        const spokenArray = recognizedWord.toLowerCase().split('');
+        const categorized = new Array(targetArray.length).fill(null); // Initialize with null size same as target
+        const matchedIndices = new Set(); // Track indices in targetArray that have been matched
+
+        spokenArray.forEach((letter, index) => {
+            console.log("Letter is ", letter);
+            if (targetArray[index] === letter) {
+                categorized[index] = { letter, color: 'green' }; // Correct letter, correct position
+                matchedIndices.add(index);
+            }
+        });
+        console.log("Categorized array ", categorized);
+        // Second pass: Check for correct letters in the wrong position (yellow)
+        spokenArray.forEach((letter, index) => {
+            if (categorized[index]) return; // Skip if already categorized as green
+
+            const targetIndex = targetArray.findIndex(
+                (targetLetter, i) => targetLetter === letter && !matchedIndices.has(i)
+            );
+
+            if (targetIndex !== -1) {
+                categorized[index] = { letter, color: 'yellow' };
+                matchedIndices.add(targetIndex); // Mark this index as matched
+            } else {
+                categorized[index] = { letter, color: 'red' }; // Incorrect letter
+            }
+        });
+        console.log("Categorized is ", categorized);
+
+        setCategorizedLetters(categorized);
+    }, [recognizedWord]);
+    
+    useEffect(()=>{
+        //There seem to be an issue with the categorizedLetters state not changing when executing this useEffect!
+        console.log("Recognized word is ", recognizedWord /*, "categorizedLetters: ", categorizedLetters*/);
+
+        if(recognizedWord){ 
+            if(recognizedWord.toLowerCase() === currentWord.toLowerCase()){
+                setIsGameWon(true);
+                setShowModal(true);
+            }
+            else {
+                setWrongGuesses((previousGuesses) => previousGuesses + 1);
+                if(wrongGuesses + 1 >+ maxGuesses){
+                    setShowModal(true);
+                    setIsGameWon(false);
+                }
+            }
+        }
+    }, [recognizedWord]);
+    
+    /*//Effect to check game status (win/lose) after each guess based on correct letters
     useEffect(() => {
         if(currentWord && correctLetters.length)
         {
@@ -92,7 +151,7 @@ const HangmanBoardV2 = ({settings, words}) => {
             }
         }
     }, [correctLetters, wrongGuesses, currentWord, setIsGameWon, setShowModal]);
-    
+    */
     const resetGameState = () => {
         console.log("Resetting game state is called!!!");
         setCorrectLetters([]);
@@ -101,6 +160,7 @@ const HangmanBoardV2 = ({settings, words}) => {
         setWrongGuesses(0);
         setIsGameWon(false);
         setIsGameReset(true); // Trigger the useEffect to initialize the new word
+        setCategorizedLetters([]);
     };
 
     //Handle Key clicks and update the game state accordingly
@@ -128,12 +188,13 @@ const HangmanBoardV2 = ({settings, words}) => {
         setIsMicrophoneEnabled(!isMicrophoneEnabled);
     };
 
+    /*
     useEffect(() => {
         if (recognizedText) {
                 handleClickedKey(recognizedText);
         }
     }, [recognizedText]);
-    
+    */
     return (
         <div className="flex flex-col items-center">
             {/* Position the Switch inside the game's white container */}
@@ -158,11 +219,21 @@ const HangmanBoardV2 = ({settings, words}) => {
 
             {/*Display the current word with guessed letters*/}
             <ul className="flex flex-wrap items-center justify-center gap-3">
-                {currentWord?.split("").map((_, index) => (
-                    <li key={index} className={`-mt-10 mb-10 w-7 text-center text-3xl font-semibold uppercase ${ !correctLetters[index] && "mt-0 border border-b-2 border-black"}`}>
-                        {correctLetters[index]}
+                {currentWord?.split("").map((_, index) => {
+
+                    const categorizedLetter = categorizedLetters[index]; // Get the current letter object
+                    return (
+                    <li
+                        key={index}
+                        className={`-mt-10 mb-10 w-7 text-center text-3xl font-semibold uppercase ${
+                            !categorizedLetter && "mt-0 border border-b-2 border-black"
+                        }`}
+                        style={{ color: categorizedLetter?.color }} // Apply color from categorizedLetters
+                    >
+                        {categorizedLetter?.letter || ""} {/* Display letter from categorizedLetters */}
                     </li>
-                ))}
+                    )}
+                )}
             </ul>
 
             {/* Display the hint */}
@@ -225,4 +296,4 @@ const HangmanBoardV2 = ({settings, words}) => {
     );
 }
 
-export default HangmanBoardV2;
+export default HangmanBoardV3;
