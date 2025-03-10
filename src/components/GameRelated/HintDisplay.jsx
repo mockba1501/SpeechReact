@@ -28,6 +28,11 @@ const HintDisplay = ({ currentWord, difficulty, hintDescription, hintImage }) =>
             setIsWordVisible(false);
             playWordSound(currentWord);
         }
+
+        return () => {
+            console.log("Hint Display Cleanup, Unmounting");
+            speechSynthesis.cancel();
+        }
     }, [currentWord, difficulty]);
 
     return (
