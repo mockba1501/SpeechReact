@@ -166,7 +166,8 @@ const HangmanBoardV3 = ({settings, words}) => {
     const handleClickedKey = (clickedKey) => {
         if (clickedKey === "Backspace") {
             // Remove the last character from userSpelling
-            setUserSpelling((prevSpelling) => prevSpelling.slice(0, -1));
+            if(userSpelling.length !== 0 && userSpelling.length !== currentWord.length)
+                setUserSpelling((prevSpelling) => prevSpelling.slice(0, -1));
         } else if(userSpelling.length < currentWord.length) {
             // Reset categorization if the user starts typing again
             if (userSpelling.length === 0) {
