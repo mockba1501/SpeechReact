@@ -48,7 +48,7 @@ const GameOverModal = ({isVersion2 = false}) => {
                 */}
                 <div className="flex justify-center gap-4"> {/* Flex container with gap */}
                 {isVersion2 ? (
-                    // Version 2: Sequential Words Game
+                    // Version 2: Sequential Words Game & V3
                     allWordsCompleted ? (
                         <button
                             onClick={handleStopPlaying}

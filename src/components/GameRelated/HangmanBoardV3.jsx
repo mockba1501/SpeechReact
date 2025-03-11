@@ -67,6 +67,7 @@ const HangmanBoardV3 = ({settings, words}) => {
 
     //Logic to detect the correct letters and their positions
     useEffect(() => {
+        console.log("Microphone Mode!!");
         //check if recognized word or currentWord is not null or empty
         if(!recognizedWord || !currentWord  || isGameReset || recognizedWord.trim() === "") {
             setCategorizedLetters([]);
@@ -85,11 +86,14 @@ const HangmanBoardV3 = ({settings, words}) => {
       // Effect to categorize letters when the user completes spelling
       useEffect(() => {
         const spelledWord = userSpelling.join("");
+        
 
         if(!spelledWord || !currentWord  || isGameReset || spelledWord.trim() === "") {
             setCategorizedLetters([]);
             return;
         }
+
+        console.log("Keyboard Mode!!");
         
         if (userSpelling.length === currentWord.length) {
             const categorized = categorizeLetters(currentWord, spelledWord);
@@ -155,11 +159,15 @@ const HangmanBoardV3 = ({settings, words}) => {
             }
         });
     
+        console.log("Finished word categorization", categorized);
         return categorized;
     };
 
     const handleClickedKey = (clickedKey) => {
-        if(userSpelling.length < currentWord.length) {
+        if (clickedKey === "Backspace") {
+            // Remove the last character from userSpelling
+            setUserSpelling((prevSpelling) => prevSpelling.slice(0, -1));
+        } else if(userSpelling.length < currentWord.length) {
             // Reset categorization if the user starts typing again
             if (userSpelling.length === 0) {
                 setCategorizedLetters([]);
@@ -206,7 +214,8 @@ const HangmanBoardV3 = ({settings, words}) => {
                 {currentWord?.split("").map((_, index) => {
 
                     const categorizedLetter = categorizedLetters[index]; // Get the current letter object
-                    const userLetter = userSpelling[index];
+                    const userLetter = isMicrophoneEnabled? categorizedLetters[index]?.letter:userSpelling[index];
+                    console.log(userLetter);
                     return (
                         <li
                             key={index}
@@ -250,7 +259,7 @@ const HangmanBoardV3 = ({settings, words}) => {
             
              {/* Display the game keyboard (hidden if microphone is enabled) */}
              {!isMicrophoneEnabled && (
-                <GameKeyboard handleClickedKey={handleClickedKey} clickedKeys={clickedKeys} />  
+                <GameKeyboard handleClickedKey={handleClickedKey} clickedKeys={clickedKeys} isVersion2={true} />  
             )}
 
             {/* Show/Hide microphone button*/}
