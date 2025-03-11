@@ -42,7 +42,7 @@ const HangmanBoardV2 = ({settings, words}) => {
             setWordIndex,
             setAllWordsCompleted
              } = useContext(GameContext);    
-    const { recognizedText, isListening, error, startListening } = useVoiceRecognition();
+    const { recognizedText, isListening, error, startListening, stopListening } = useVoiceRecognition();
     
     //Reference for the hint element
     const hintRef = useRef(null);
@@ -125,6 +125,10 @@ const HangmanBoardV2 = ({settings, words}) => {
 
     // Toggle keyboard visibility
     const toggleMicrophone = () => {
+        //In case we listening, this should stop the microphone from listening
+        if(isMicrophoneEnabled)
+            stopListening();
+        
         setIsMicrophoneEnabled(!isMicrophoneEnabled);
     };
 

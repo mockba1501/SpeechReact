@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { getTokenOrRefresh } from "../token_util";
 import { ResultReason } from 'microsoft-cognitiveservices-speech-sdk';
 import * as speechsdk from 'microsoft-cognitiveservices-speech-sdk';
@@ -19,6 +19,7 @@ const useFullWordRecognition = () => {
     const [recognizedWord, setRecognizedWord] = useState('');
     const [isListening, setIsListening] = useState(false);
     const [error, setError] = useState(null);
+    const recognizerRef = useRef(null);
 
     const startListening = async () => {
         setIsListening(true);
@@ -37,6 +38,7 @@ const useFullWordRecognition = () => {
 
             const audioConfig = speechsdk.AudioConfig.fromDefaultMicrophoneInput();
             const recognizer = new speechsdk.SpeechRecognizer(speechConfig, audioConfig);
+            recognizerRef.current = recognizer;
 
             recognizer.recognizeOnceAsync(result => {
                 setIsListening(false);
@@ -58,7 +60,16 @@ const useFullWordRecognition = () => {
         }
     };
 
-    return { recognizedWord, isListening, error, startListening };
+    // Cancel recognition
+    const stopListening = () => {
+        if (isListening && recognizerRef.current) {
+            recognizerRef.current.close(); // Immediately stops the recognition process
+            setIsListening(false);
+            recognizerRef.current = null; // Clear the ref
+        };
+    }
+
+    return { recognizedWord, isListening, error, startListening, stopListening };
 };
 
 export default useFullWordRecognition;

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useRef } from 'react';
 
 //Speech Recognition
 import { getTokenOrRefresh } from "../token_util";
@@ -62,6 +62,7 @@ const useVoiceRecognition = () => {
     const [recognizedText, setRecognizedText] = useState('');
     const [isListening, setIsListening] = useState(false);
     const [error, setError] = useState(null);
+    const recognizerRef = useRef(null);
 
     // Activate microphone for speech recognition
     const startListening = async () => {
@@ -86,6 +87,7 @@ const useVoiceRecognition = () => {
 
             const audioConfig = speechsdk.AudioConfig.fromDefaultMicrophoneInput();
             const recognizer = new speechsdk.SpeechRecognizer(speechConfig, audioConfig);
+            recognizerRef.current = recognizer;
 
             recognizer.recognizeOnceAsync(result => {
                 setIsListening(false);
@@ -109,7 +111,16 @@ const useVoiceRecognition = () => {
         }
     };
 
-    return {recognizedText, isListening, error, startListening};
+    // Cancel recognition
+    const stopListening = () => {
+        if (isListening && recognizerRef.current) {
+            recognizerRef.current.close(); // Immediately stops the recognition process
+            setIsListening(false);
+            recognizerRef.current = null; // Clear the ref
+        };
+    }
+
+    return {recognizedText, isListening, error, startListening, stopListening};
 }
 
 export default useVoiceRecognition;

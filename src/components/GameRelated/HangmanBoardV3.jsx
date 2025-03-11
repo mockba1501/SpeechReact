@@ -37,8 +37,9 @@ const HangmanBoardV3 = ({settings, words}) => {
             wordIndex,
             setWordIndex,
             setAllWordsCompleted
-             } = useContext(GameContext);    
-    const { recognizedWord, isListening, error, startListening } = useFullWordRecognition();
+            } = useContext(GameContext);    
+
+    const { recognizedWord, isListening, error, startListening, stopListening } = useFullWordRecognition();
     const [categorizedLetters, setCategorizedLetters] = useState([]);
     const [userSpelling, setUserSpelling] = useState([]);
 
@@ -183,6 +184,10 @@ const HangmanBoardV3 = ({settings, words}) => {
 
     // Toggle keyboard visibility
     const toggleMicrophone = () => {
+        //In case we listening, this should stop the microphone from listening
+        if(isMicrophoneEnabled)
+            stopListening();
+        
         setIsMicrophoneEnabled(!isMicrophoneEnabled);
         setCategorizedLetters([]);
         setUserSpelling([]);
