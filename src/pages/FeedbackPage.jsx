@@ -1,11 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import GameContext from "../context/GameContext";
 
 //Styling
 import Box from '@mui/material/Box';
 import { Button, Typography, List, ListItem } from "@mui/material";
 
 const FeedbackPage = () => {
+    const {
+        gameStatsManager
+    } = useContext(GameContext);
     const [results, setResults] = useState(null);
     const navigate = useNavigate();
     
@@ -17,6 +21,7 @@ const FeedbackPage = () => {
         ]
     };
     
+    console.log("We are inside the Feedback page and here are the results", gameStatsManager.getTotalMistakes())
     // Save to local storage or context
     localStorage.setItem("gameResults", JSON.stringify(gameResults));
 

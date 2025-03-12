@@ -1,8 +1,10 @@
 import { createContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import GameStatsManager from "./GameStatsManager";
 
 //create a context for the game
 const GameContext = createContext();
+const gameStatsManager = new GameStatsManager();
 
 //Provider component to manage game state and provide it to children components
 export const GameProvider = ({ children }) => {
@@ -47,8 +49,15 @@ export const GameProvider = ({ children }) => {
         resetGameBoard();
     };
 
+    const handleFeedback = () => {
+        // Navigate to the feedback page
+        resetGameBoard();
+        setShowModal(false);
+        
+        navigate("/feedback");
+    };
     const handleStopPlaying = () => {
-        // Navigate to the main menu or another screen
+        // Navigate to the main menu
         resetGameBoard();
         setShowModal(false);
         
@@ -84,7 +93,9 @@ export const GameProvider = ({ children }) => {
                 setAllWordsCompleted,
                 handleNextWord,
                 handleRestart,
+                handleFeedback,
                 handleStopPlaying,
+                gameStatsManager
             }}>
             {children}
             </GameContext.Provider>

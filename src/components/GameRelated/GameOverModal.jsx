@@ -8,6 +8,7 @@ const GameOverModal = ({isVersion2 = false}) => {
             showModal,
             handleNextWord,
             handleRestart,
+            handleFeedback,
             handleStopPlaying,
             allWordsCompleted,
             resetGameBoard
@@ -51,10 +52,10 @@ const GameOverModal = ({isVersion2 = false}) => {
                     // Version 2: Sequential Words Game & V3
                     allWordsCompleted ? (
                         <button
-                            onClick={handleStopPlaying}
+                            onClick={handleFeedback}
                             className="bg-blue-500 text-white px-4 py-2 rounded"
                         >
-                            Go Back to Main Menu
+                            Go to Feedback
                         </button>
                     ) : (
                         <button

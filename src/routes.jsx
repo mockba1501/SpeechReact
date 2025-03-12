@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { GameProvider } from "./context/GameContext";
 
 import MainMenu from "./pages/MainMenu";
 import SettingsPage from "./pages/SettingsPage";
@@ -14,21 +15,24 @@ import App from "./App";
 //import WordPuzzleGame from "./games/wordPuzzle/WordPuzzleGame";
 
 const AppRoutes = () => (
-  <Router>
-    <Routes>
-      <Route path="/" element={<Layout />}>
-        <Route index element={<MainMenu />} />
-        <Route path="/settings/:gameId" element={<SettingsPage />} />
-        <Route path="/game/hangman" element={<HangmanGame />} />
-        <Route path="/game/hangman2" element={<Hangman2 />} />
-        <Route path="/game/hangman3" element={<Hangman3 />} />
-        <Route path="/word-selection/:gameId" element={<WordSelectionPage />} />
-        <Route path="/feedback" element={<FeedbackPage />} />
-    {/*    <Route path="/game/word-puzzle" element={<WordPuzzleGame />} />
-        */}
-      </Route>
-    </Routes>
-  </Router>
+  
+    <Router>
+      <GameProvider>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<MainMenu />} />
+          <Route path="/settings/:gameId" element={<SettingsPage />} />
+          <Route path="/game/hangman" element={<HangmanGame />} />
+          <Route path="/game/hangman2" element={<Hangman2 />} />
+          <Route path="/game/hangman3" element={<Hangman3 />} />
+          <Route path="/word-selection/:gameId" element={<WordSelectionPage />} />
+          <Route path="/feedback" element={<FeedbackPage />} />
+        </Route>
+        
+      </Routes>
+      </GameProvider>
+    </Router>
+  
 );
 
 export default AppRoutes;

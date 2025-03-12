@@ -36,7 +36,8 @@ const HangmanBoardV3 = ({settings, words}) => {
             setIsMicrophoneEnabled,
             wordIndex,
             setWordIndex,
-            setAllWordsCompleted
+            setAllWordsCompleted,
+            gameStatsManager
             } = useContext(GameContext);    
 
     const { recognizedWord, isListening, error, startListening, stopListening } = useFullWordRecognition();
@@ -81,6 +82,8 @@ const HangmanBoardV3 = ({settings, words}) => {
         // Check if the recognized word matches the current word
        checkMatchingWords(currentWord, recognizedWord);
 
+       gameStatsManager.logAttempt(currentWord, recognizedWord, categorized, "Microphone");
+
     }, [recognizedWord]);
     
     
@@ -102,6 +105,8 @@ const HangmanBoardV3 = ({settings, words}) => {
 
             // Check if the recognized word matches the current word
             checkMatchingWords(currentWord, spelledWord);
+
+            gameStatsManager.logAttempt(currentWord, spelledWord, categorized, "Keyboard");
         }
     }, [userSpelling]);
 
@@ -187,7 +192,7 @@ const HangmanBoardV3 = ({settings, words}) => {
         //In case we listening, this should stop the microphone from listening
         if(isMicrophoneEnabled)
             stopListening();
-        
+
         setIsMicrophoneEnabled(!isMicrophoneEnabled);
         setCategorizedLetters([]);
         setUserSpelling([]);
