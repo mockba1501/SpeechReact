@@ -82,7 +82,12 @@ const HangmanBoardV3 = ({settings, words}) => {
         // Check if the recognized word matches the current word
        checkMatchingWords(currentWord, recognizedWord);
 
-       gameStatsManager.logAttempt(currentWord, recognizedWord, categorized, "Microphone");
+       gameStatsManager.logAttempt({
+        currentWord, 
+        attemptWord: recognizedWord, 
+        categorizedWord: categorized, 
+        recognitionMode: "Microphone"
+    });
 
     }, [recognizedWord]);
     
@@ -106,7 +111,12 @@ const HangmanBoardV3 = ({settings, words}) => {
             // Check if the recognized word matches the current word
             checkMatchingWords(currentWord, spelledWord);
 
-            gameStatsManager.logAttempt(currentWord, spelledWord, categorized, "Keyboard");
+            gameStatsManager.logAttempt({
+                currentWord, 
+                attemptWord: spelledWord, 
+                categorizedWord: categorized, 
+                recognitionMode: "Keyboard"
+            });
         }
     }, [userSpelling]);
 
@@ -133,6 +143,7 @@ const HangmanBoardV3 = ({settings, words}) => {
         setIsGameReset(true); // Trigger the useEffect to initialize the new word
         setCategorizedLetters([]);
         setUserSpelling([]);
+      //  gameStatsManager.resetStats();
     };
 
     const categorizeLetters = (targetWord, userWord) => {

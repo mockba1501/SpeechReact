@@ -4,7 +4,7 @@ import GameContext from "../context/GameContext";
 
 //Styling
 import Box from '@mui/material/Box';
-import { Button, Typography, List, ListItem } from "@mui/material";
+import { Button, Typography, List, ListItem, ListItemText } from "@mui/material";
 
 const FeedbackPage = () => {
     const {
@@ -13,19 +13,15 @@ const FeedbackPage = () => {
     const [results, setResults] = useState(null);
     const navigate = useNavigate();
     
-    const gameResults = {
-        wordsPlayed: [
-            { word: "Rabbit", accuracy: 85, mistakes: ["R mispronounced"] },
-            { word: "Cat", accuracy: 95, mistakes: [] },
-            { word: "Dog", accuracy: 70, mistakes: ["D sounded unclear"] }
-        ]
-    };
-    
-    console.log("We are inside the Feedback page and here are the results", gameStatsManager.getTotalMistakes())
     // Save to local storage or context
-    localStorage.setItem("gameResults", JSON.stringify(gameResults));
+    useEffect(() => {
+        const results = gameStatsManager.getAllResults();
+        console.log("Triggering game stats", results)
+        localStorage.setItem("gameResults", JSON.stringify(results));
+        setResults(results);
+    }, [gameStatsManager]);
 
-        
+
     useEffect(() => {
         const storedResults = localStorage.getItem("gameResults");
         if (storedResults) {
@@ -33,6 +29,10 @@ const FeedbackPage = () => {
         }
     }, []);
 
+    const handlePlayAgain = () =>{
+        gameStatsManager.resetStats();
+        navigate("/");
+    }
     if (!results) return <p>Loading feedback...</p>;
 
     return (
@@ -57,48 +57,53 @@ const FeedbackPage = () => {
                     Game Feedback
                 </Typography>
 
-                {/* Word results */}
+                {results.wordsPlayed.length === 0 ? (
+                    <Typography color="gray" mt={2}>No words played yet.</Typography>
+                ) : (
                 <List sx={{ width: "100%" }}>
+                    
                     {results.wordsPlayed.map((wordData, index) => (
-                        <ListItem
-                            key={index}
-                            sx={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                                padding: 2,
-                                borderBottom: "1px solid #ddd",
-                            }}
-                        >
-                            <Typography fontWeight="bold">{wordData.word}</Typography>
-                            <Typography 
-                                color={wordData.accuracy > 85 ? "green" : "red"}
-                            >
-                                {wordData.accuracy}%
-                            </Typography>
+                        <ListItem key={index} sx={{ padding: 2, borderBottom: "1px solid #ddd" }}>
+                            <details style={{ width: "100%" }} open>
+                                <summary style={{ display: "flex", justifyContent: "space-between", cursor: "pointer" }}>
+                                    <Typography fontWeight="bold">{wordData.word}</Typography>
+                                    <Typography color={"blue"}>{wordData.accuracy}%</Typography>
+                                </summary>
+                                <List sx={{ paddingLeft: 2, marginTop: 1 }}>
+                                    {wordData.attempts.map((attempt, attemptIndex) => (
+                                        <ListItem key={attemptIndex} sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+                                            <Typography>
+                                                Attempt {attemptIndex + 1}:
+                                            </Typography>
+                                            <Typography>
+                                                
+                                                {attempt.categorizedWord.map((mistake, i) => {
+                                                    if (!mistake) {
+                                                        return <span key={i} style={{ color: "red", marginRight: 4 }}><b>_</b></span>;
+                                                    }
+                                                    return (
+                                                        <span key={i} style={{ color: mistake.color || "gray", marginRight: 4 }}>
+                                                            <b>{mistake.letter}</b>
+                                                        </span>
+                                                    );
+                                                })}
+                                            </Typography>
+                                        </ListItem>
+                                    ))}
+                                </List>
+                            </details>
                         </ListItem>
                     ))}
+                
                 </List>
-
-                {/* Error insights */}
-                <Typography variant="h6" mt={3}>
-                    Error Insights:
-                </Typography>
-                <Box sx={{ textAlign: "left", mt: 1 }}>
-                    {results.wordsPlayed.map((wordData, index) => (
-                        wordData.mistakes.length > 0 ? (
-                            <Typography key={index} color="red">
-                                {wordData.word}: {wordData.mistakes.join(", ")}
-                            </Typography>
-                        ) : null
-                    ))}
-                </Box>
+                )}
 
                 {/* Replay Button */}
                 <Button
                     variant="contained"
                     color="primary"
                     sx={{ mt: 3 }}
-                    onClick={() => navigate("/")}
+                    onClick={handlePlayAgain}
                 >
                     Play Again
                 </Button>
