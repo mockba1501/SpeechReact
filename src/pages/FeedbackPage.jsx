@@ -5,12 +5,14 @@ import GameContext from "../context/GameContext";
 //Styling
 import Box from '@mui/material/Box';
 import { Button, Typography, List, ListItem, ListItemText } from "@mui/material";
+import {ExpandMore} from "@mui/icons-material";
 
 const FeedbackPage = () => {
     const {
         gameStatsManager
     } = useContext(GameContext);
     const [results, setResults] = useState(null);
+    const [settings, setSettings] = useState(null);
     const navigate = useNavigate();
     
     // Save to local storage or context
@@ -19,6 +21,9 @@ const FeedbackPage = () => {
         console.log("Triggering game stats", results)
         localStorage.setItem("gameResults", JSON.stringify(results));
         setResults(results);
+
+        const sessionSettings = gameStatsManager.getSessionSettings();
+        setSettings(sessionSettings);
     }, [gameStatsManager]);
 
 
@@ -49,8 +54,10 @@ const FeedbackPage = () => {
                     boxShadow: 3,
                     maxWidth: 600,
                     minWidth: 400,
-                    width: "50%",
+                    width: "70%",
                     textAlign: "center",
+                    overflow: "hidden", // Prevents content from escaping the box
+                    wordWrap: "break-word", // Ensures long words wrap
                 }}
             >
                 <Typography variant="h4" fontWeight="bold" mb={2}>
@@ -61,40 +68,42 @@ const FeedbackPage = () => {
                     <Typography color="gray" mt={2}>No words played yet.</Typography>
                 ) : (
                 <List sx={{ width: "100%" }}>
-                    
+                    <h2>Great job! You practiced <b>{results.wordsPlayed.length} word{results.wordsPlayed.length>1?"s ":" "}</b>
+                        with the sound <b>{'"'}{settings.sound}{'"'}</b> in the <b>{settings.position} of the word</b>. Keep up the good work!
+                        </h2>
                     {results.wordsPlayed.map((wordData, index) => (
-                        <ListItem key={index} sx={{ padding: 2, borderBottom: "1px solid #ddd" }}>
-                            <details style={{ width: "100%" }} open>
-                                <summary style={{ display: "flex", justifyContent: "space-between", cursor: "pointer" }}>
-                                    <Typography fontWeight="bold">{wordData.word}</Typography>
-                                    <Typography color={"blue"}>{wordData.accuracy}%</Typography>
-                                </summary>
-                                <List sx={{ paddingLeft: 2, marginTop: 1 }}>
-                                    {wordData.attempts.map((attempt, attemptIndex) => (
-                                        <ListItem key={attemptIndex} sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-                                            <Typography>
-                                                Attempt {attemptIndex + 1}:
-                                            </Typography>
-                                            <Typography>
-                                                
-                                                {attempt.categorizedWord.map((mistake, i) => {
-                                                    if (!mistake) {
-                                                        return <span key={i} style={{ color: "red", marginRight: 4 }}><b>_</b></span>;
-                                                    }
-                                                    return (
-                                                        <span key={i} style={{ color: mistake.color || "gray", marginRight: 4 }}>
-                                                            <b>{mistake.letter}</b>
-                                                        </span>
-                                                    );
-                                                })}
-                                            </Typography>
-                                        </ListItem>
-                                    ))}
-                                </List>
-                            </details>
-                        </ListItem>
+                        <details key={index} style={{ width: "100%", borderBottom: "1px solid #ddd", padding: "8px 0" }} open={index === 0}>
+                            <summary style={{ cursor: "pointer", fontWeight: "bold", display: "flex", alignItems: "center" }}>
+                                <span style={{ marginRight: 8, transition: "transform 0.3s"}}>
+                                    ▶️
+                                </span>
+                                {wordData.word} - {wordData.accuracy}%
+                            </summary>
+
+                            {/* Attempts list */}
+                            <List sx={{ paddingLeft: 2, backgroundColor: "#f9f9f9", borderRadius: "8px", padding: "8px", marginTop: "4px" }}>
+                                {wordData.attempts.map((attempt, attemptIndex) => (
+                                    <ListItem key={attemptIndex} sx={{display: "block"}}>
+                                         <h3 style={{ margin: 0, marginRight: "16px", flexShrink: 0 }}>
+                                            <b>Attempt {attemptIndex + 1}:</b>
+                                        </h3>
+                                        <ListItemText
+                                            primary={
+                                                attempt.categorizedWord.map((mistake, i) => (
+                                                    <span key={i} style={{ color: mistake?.color || "gray", marginRight: 4 }}>
+                                                        <b>{mistake?.letter || "_"}</b>
+                                                    </span>
+                                                ))
+                                            }
+                                            secondary={<span>
+                                                <b>Mode:</b> {attempt.recognitionMode}, <b>Timestamp:</b> {new Date(attempt.timestamp).toLocaleTimeString()}
+                                            </span>}
+                                        />
+                                    </ListItem>
+                                ))}
+                            </List>
+                        </details>
                     ))}
-                
                 </List>
                 )}
 

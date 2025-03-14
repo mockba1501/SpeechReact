@@ -1,10 +1,15 @@
 class GameStatsManager {
     constructor() {
       this.attemptsByWord = {}; // Store attempts grouped by word
-      //I need to store the passed game setting (session settings)
+      this.sessionSettings = {}; //Store the game session setting
     }
   
     //Start game session function (Responsible for logging Settings, selectedWords, startTime, finishTime)
+    setSessionSettings(currentSettings)
+    {
+      console.log(currentSettings);
+      this.sessionSettings = currentSettings;
+    }
 
     logAttempt({ currentWord, attemptWord, categorizedWord, recognitionMode }) {
         console.log("Logging attempt ", currentWord, attemptWord, categorizedWord, recognitionMode);
@@ -80,6 +85,11 @@ class GameStatsManager {
 
     getAttemptsForWord(word) {
       return this.attemptsByWord[word] || [];
+    }
+
+    getSessionSettings()
+    {
+      return this.sessionSettings;
     }
   
     resetStats() {

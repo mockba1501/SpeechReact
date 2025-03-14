@@ -48,6 +48,12 @@ const HangmanBoardV3 = ({settings, words}) => {
     const [hintDescription, setHintDescription] = useState("");
     const maxGuesses = 6;
     //Effect to initialize the game board with a random word
+
+    //Pass the game settings once you load the page 
+    useEffect(() => {
+        gameStatsManager.setSessionSettings(settings);
+    },[])
+    
     useEffect(() => {
         resetGameState();
 
