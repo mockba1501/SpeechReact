@@ -5,6 +5,11 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
 
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: './vitest.setup.js', // Optional, for global test setup
+  },
   // Build-specific configurations
   build: {
     sourcemap: true, // Enable source maps for debugging
