@@ -51,7 +51,7 @@ const HangmanBoardV3 = ({settings, words}) => {
 
     //Pass the game settings once you load the page 
     useEffect(() => {
-        gameStatsManager.setSessionSettings(settings);
+        gameStatsManager.setSessionSettings(settings,"v3");
     },[])
     
     useEffect(() => {
@@ -89,10 +89,10 @@ const HangmanBoardV3 = ({settings, words}) => {
        checkMatchingWords(currentWord, recognizedWord);
 
        gameStatsManager.logAttempt({
+        recognitionMode: "Microphone",
         currentWord, 
         attemptWord: recognizedWord, 
         categorizedWord: categorized, 
-        recognitionMode: "Microphone"
     });
 
     }, [recognizedWord]);
@@ -118,10 +118,10 @@ const HangmanBoardV3 = ({settings, words}) => {
             checkMatchingWords(currentWord, spelledWord);
 
             gameStatsManager.logAttempt({
+                recognitionMode: "Keyboard",
                 currentWord, 
                 attemptWord: spelledWord, 
                 categorizedWord: categorized, 
-                recognitionMode: "Keyboard"
             });
         }
     }, [userSpelling]);

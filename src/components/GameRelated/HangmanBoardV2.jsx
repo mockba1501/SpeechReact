@@ -40,7 +40,8 @@ const HangmanBoardV2 = ({settings, words}) => {
             setIsMicrophoneEnabled,
             wordIndex,
             setWordIndex,
-            setAllWordsCompleted
+            setAllWordsCompleted,
+            gameStatsManager
              } = useContext(GameContext);    
     const { recognizedText, isListening, error, startListening, stopListening } = useVoiceRecognition();
     
@@ -49,6 +50,11 @@ const HangmanBoardV2 = ({settings, words}) => {
     //const [hintDescription, setHintDescription] = useState("");
     const maxGuesses = 6;
     
+    //Pass the game settings once you load the page 
+    useEffect(() => {
+        gameStatsManager.setSessionSettings(settings,"v2");
+    },[])
+
     //Effect to initialize the game board with a random word
     useEffect(() => {
       console.log("Selected Words:", words, " current word index ", wordIndex);
@@ -78,17 +84,27 @@ const HangmanBoardV2 = ({settings, words}) => {
     useEffect(() => {
         if(currentWord && correctLetters.length)
         {
+            let finishGame = false;
             console.log("Checking game status and current word is: ", currentWord);
             //if number of wrong guesses is greater than or equal to the max guesses, the game is lost
+            //Lose Game Condition
             if(wrongGuesses >= maxGuesses)
             {
                 setShowModal(true);
                 setIsGameWon(false);
+                finishGame = true;
             }
+            //Win Game Condition
             else if(correctLetters.join("") === currentWord)
             {
                 setShowModal(true);
                 setIsGameWon(true);
+                finishGame = true;
+            }
+
+            if(finishGame)
+            {
+                gameStatsManager.logFinishAttempt(currentWord, correctLetters, incorrectLetters);
             }
         }
     }, [correctLetters, wrongGuesses, currentWord, setIsGameWon, setShowModal]);
@@ -111,7 +127,7 @@ const HangmanBoardV2 = ({settings, words}) => {
                 currentWord[index] === clickedKey ? clickedKey : letter
             );
             setCorrectLetters(updatedCorrectLetters);
-            console.log("Correct Letters: ",updatedCorrectLetters);
+            console.log("Correct Letters: ",updatedCorrectLetters, " size of correct letters ",updatedCorrectLetters.length);
         }
         else
         {
@@ -120,7 +136,15 @@ const HangmanBoardV2 = ({settings, words}) => {
         }
 
         setClickedKeys((previousKeys) => [...previousKeys, clickedKey]);
-        
+        /*
+        // Log the attempt
+        gameStatsManager.logAttempt({
+            recognitionMode: isMicrophoneEnabled ? "Microphone" : "Keyboard", // Track whether the attempt was made via voice or keyboard
+            currentWord: currentWord, // The word being guessed
+            correctLetters: correctLetters, // The current state of correct letters
+            incorrectLetters: incorrectLetters, // The current state of incorrect letters
+        });
+        */
     };
 
     // Toggle keyboard visibility

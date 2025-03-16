@@ -18,21 +18,11 @@ const FeedbackPage = () => {
     // Save to local storage or context
     useEffect(() => {
         const results = gameStatsManager.getAllResults();
-        console.log("Triggering game stats", results)
-        localStorage.setItem("gameResults", JSON.stringify(results));
         setResults(results);
 
         const sessionSettings = gameStatsManager.getSessionSettings();
         setSettings(sessionSettings);
     }, [gameStatsManager]);
-
-
-    useEffect(() => {
-        const storedResults = localStorage.getItem("gameResults");
-        if (storedResults) {
-            setResults(JSON.parse(storedResults));
-        }
-    }, []);
 
     const handlePlayAgain = () =>{
         gameStatsManager.resetStats();
@@ -61,7 +51,7 @@ const FeedbackPage = () => {
                 }}
             >
                 <Typography variant="h4" fontWeight="bold" mb={2}>
-                    Game Feedback
+                    Game Feedback ({settings.gameVersion})
                 </Typography>
 
                 {results.wordsPlayed.length === 0 ? (
@@ -77,36 +67,74 @@ const FeedbackPage = () => {
                                 <span style={{ marginRight: 8, transition: "transform 0.3s"}}>
                                     ▶️
                                 </span>
-                                {wordData.word} - {wordData.accuracy}%
+                                {wordData.word} - Accuracy: {wordData.accuracy}%
+                                {settings.gameVersion === "v2" && `, Precision: ${gameStatsManager.getPrecisionForWord(wordData.word)}%`}
                             </summary>
-
-                            {/* Attempts list */}
-                            <List sx={{ paddingLeft: 2, backgroundColor: "#f9f9f9", borderRadius: "8px", padding: "8px", marginTop: "4px" }}>
-                                {wordData.attempts.map((attempt, attemptIndex) => (
-                                    <ListItem key={attemptIndex} sx={{display: "block"}}>
-                                         <h3 style={{ margin: 0, marginRight: "16px", flexShrink: 0 }}>
-                                            <b>Attempt {attemptIndex + 1}:</b>
-                                        </h3>
-                                        <ListItemText
-                                            primary={
-                                                attempt.categorizedWord.map((mistake, i) => (
-                                                    <span key={i} style={{ color: mistake?.color || "gray", marginRight: 4 }}>
-                                                        <b>{mistake?.letter || "_"}</b>
-                                                    </span>
-                                                ))
-                                            }
-                                            secondary={<span>
-                                                <b>Mode:</b> {attempt.recognitionMode}, <b>Timestamp:</b> {new Date(attempt.timestamp).toLocaleTimeString()}
-                                            </span>}
-                                        />
-                                    </ListItem>
-                                ))}
-                            </List>
-                        </details>
-                    ))}
-                </List>
+                        
+                            {settings.gameVersion === "v3" ? (
+                                    // Version 1: Show all attempts
+                                    <List sx={{ paddingLeft: 2, backgroundColor: "#f9f9f9", borderRadius: "8px", padding: "8px", marginTop: "4px" }}>
+                                        {wordData.attempts.map((attempt, attemptIndex) => (
+                                            <ListItem key={attemptIndex} sx={{ display: "block" }}>
+                                                <h3 style={{ margin: 0, marginRight: "16px", flexShrink: 0 }}>
+                                                    <b>Attempt {attemptIndex + 1}:</b>
+                                                </h3>
+                                                <ListItemText
+                                                    primary={attempt.categorizedWord.map((mistake, i) => (
+                                                        <span key={i} style={{ color: mistake?.color || "gray", marginRight: 4 }}>
+                                                            <b>{mistake?.letter || "_"}</b>
+                                                        </span>
+                                                    ))}
+                                                    secondary={
+                                                        <span>
+                                                            <b>Mode:</b> {attempt.recognitionMode}, <b>Timestamp:</b> {new Date(attempt.timestamp).toLocaleTimeString()}
+                                                        </span>
+                                                    }
+                                                />
+                                            </ListItem>
+                                        ))}
+                                    </List>
+                                ) : (
+                                    // Version 2: Focus on accuracy and incorrect letters
+                                    <List sx={{ paddingLeft: 2, backgroundColor: "#f9f9f9", borderRadius: "8px", padding: "8px", marginTop: "4px" }}>
+                                        <ListItem>
+                                            <ListItemText
+                                                primary={
+                                                    <>
+                                                        <b>Guessed Word:</b> {" "}
+                                                        {wordData.correctLetters.length > 0 ? (
+                                                            wordData.correctLetters.map((letter, i) => (
+                                                                <span key={i} style={{ color: "green", marginRight: 4 }}>
+                                                                    <b>{letter}</b>
+                                                                </span>
+                                                            ))
+                                                        ) : (
+                                                            <span style={{ color: "gray" }}>None!</span>
+                                                        )}
+                                                    </>
+                                                }
+                                                secondary={
+                                                    <>
+                                                        <b>Incorrect Letters:</b>{" "}
+                                                        {wordData.mistakes.length > 0 ? (
+                                                        wordData.mistakes.map((letter, i) => (
+                                                            <span key={i} style={{ color: "red", marginRight: 4 }}>
+                                                            <b>{letter}</b>
+                                                            </span>
+                                                        ))
+                                                        ) : (
+                                                        <span style={{ color: "green" }}>None!</span>
+                                                        )}
+                                                    </>
+                                                }
+                                            />
+                                        </ListItem>
+                                    </List>
+                                )}
+                            </details>
+                        ))}
+                    </List>
                 )}
-
                 {/* Replay Button */}
                 <Button
                     variant="contained"
