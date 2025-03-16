@@ -25,7 +25,7 @@ const MainMenu = () => {
               className="flex flex-col items-center justify-center rounded-lg bg-gray-100 p-6 shadow-md transition hover:bg-gray-200 hover:shadow-lg cursor-pointer"
             >
               <h2 className="text-xl font-semibold text-gray-700">{game.name}</h2>
-              <p className="text-sm text-gray-600">{game.description}</p>
+              <p className="text-sm text-gray-600 whitespace-pre-line text-center">{game.description}</p>
             </div>
           ))}
         </div>
