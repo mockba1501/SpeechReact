@@ -1,5 +1,5 @@
 {
-  "name": "Hangman-react",
+  "name": "SpeechTherapyGames",
   "private": true,
   "version": "0.2.0",
   "type": "module",
@@ -12,28 +12,36 @@
     "microsoft-cognitiveservices-speech-sdk": "^1.32.0",
     "react": "^18.2.0",
     "react-dom": "^18.0.1",
+    "react-router-dom": "^7.2.0",
     "universal-cookie": "^4.0.4"
   },
   "scripts": {
     "start": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest --ui"
   },
   "description": "This is a React application game that utilized the Azure Speech service to detect letters",
   "main": "index.js",
   "author": "",
   "devDependencies": {
     "@eslint/js": "^9.21.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.2.0",
     "@vitejs/plugin-react": "^4.3.4",
+    "@vitest/ui": "^3.0.8",
     "autoprefixer": "^10.4.20",
     "eslint": "^9.21.0",
     "eslint-plugin-react": "^7.37.4",
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-react-refresh": "^0.4.19",
+    "eslint-plugin-vitest": "^0.5.4",
     "globals": "^16.0.0",
+    "jsdom": "^26.0.0",
     "postcss": "^8.5.3",
     "tailwindcss": "^3.4.17",
-    "vite": "^6.2.0"
+    "vite": "^6.2.0",
+    "vitest": "^3.0.8"
   }
 }

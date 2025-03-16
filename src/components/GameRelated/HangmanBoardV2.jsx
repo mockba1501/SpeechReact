@@ -1,10 +1,15 @@
 import { useContext, useEffect, useRef, useState } from "react";
 
-//Game Logic
-import GameContext from "../context/GameContext";
+//Core Game Logic
+import GameContext from "../../context/GameContext";
 import GameKeyboard from "./GameKeyboard";
-import useVoiceRecognition from "../hooks/useVoiceRecognition";
-import {wordList} from "../constants";
+import useVoiceRecognition from "../../hooks/useVoiceRecognition";
+import {wordList} from "../../constants";
+//New logic to be implemented
+//import ScoringPanel from "./ScoringPanel";
+//import DifficultyControls from "./DifficultyControls";
+//import HintDisplay from "./HintDisplay";
+//import GameFeedback from "./GameFeedback";
 
 //Styling
 import Switch from '@mui/material/Switch';
@@ -14,7 +19,7 @@ import IconButton from '@mui/material/IconButton';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Typography from '@mui/material/Typography';
 
-const GameBoard = () => {
+const HangmanBoardV2 = ({settings, words}) => {
     const {currentWord,
             setCurrentWord,
             correctLetters,
@@ -32,41 +37,88 @@ const GameBoard = () => {
             isGameReset,
             setIsGameReset,
             isMicrophoneEnabled,
-            setIsMicrophoneEnabled } = useContext(GameContext);    
-    const { recognizedText, isListening, error, startListening } = useVoiceRecognition();
+            setIsMicrophoneEnabled,
+            wordIndex,
+            setWordIndex,
+            setAllWordsCompleted,
+            gameStatsManager
+             } = useContext(GameContext);    
+    const { recognizedText, isListening, error, startListening, stopListening } = useVoiceRecognition();
     
     //Reference for the hint element
     const hintRef = useRef(null);
+    //const [hintDescription, setHintDescription] = useState("");
     const maxGuesses = 6;
+    
+    //Pass the game settings once you load the page 
+    useEffect(() => {
+        gameStatsManager.setSessionSettings(settings,"v2");
+    },[])
 
     //Effect to initialize the game board with a random word
     useEffect(() => {
-        //Get a random word from the word list
-        const {word, hint} = wordList[Math.floor(Math.random() * wordList.length)];
-        hintRef.current.innerText = hint;
-        setCurrentWord(word);
-        setCorrectLetters(new Array(word.length).fill(""));
-        setIsGameReset(false);
-    }, [isGameReset, setCorrectLetters, setCurrentWord, setIsGameReset]);
+      //console.log("Selected Words:", words, " current word index ", wordIndex);
+
+        resetGameState();
+        if(words.length > 0 && wordIndex < words.length)
+        {
+            //console.log("Assigning new word to the game board!!!");
+            //Get a random word from the word list
+            const {word, hint} = words[wordIndex];
+            hintRef.current.innerText = hint;
+            //setHintDescription(hint);
+            //console.log("Current word is: ", word);
+            setCurrentWord(word);
+            setCorrectLetters(new Array(word.length).fill(""));
+            setIsGameReset(false);
+        }
+
+        if(wordIndex === words.length - 1)
+        {
+            //console.log("All words are completed");
+            setAllWordsCompleted(true);
+        }
+    }, [wordIndex]); // I only need to activiate this effect when the wordIndex changes
 
     //Effect to check game status (win/lose) after each guess based on correct letters
     useEffect(() => {
         if(currentWord && correctLetters.length)
         {
+            let finishGame = false;
+            //console.log("Checking game status and current word is: ", currentWord);
             //if number of wrong guesses is greater than or equal to the max guesses, the game is lost
+            //Lose Game Condition
             if(wrongGuesses >= maxGuesses)
             {
                 setShowModal(true);
                 setIsGameWon(false);
+                finishGame = true;
             }
+            //Win Game Condition
             else if(correctLetters.join("") === currentWord)
             {
                 setShowModal(true);
                 setIsGameWon(true);
+                finishGame = true;
+            }
+
+            if(finishGame)
+            {
+                gameStatsManager.logFinishAttempt(currentWord, correctLetters, incorrectLetters);
             }
         }
     }, [correctLetters, wrongGuesses, currentWord, setIsGameWon, setShowModal]);
     
+    const resetGameState = () => {
+        //console.log("Resetting game state is called!!!");
+        setCorrectLetters([]);
+        setIncorrectLetters([]);
+        setClickedKeys([]);
+        setWrongGuesses(0);
+        setIsGameWon(false);
+        setIsGameReset(true); // Trigger the useEffect to initialize the new word
+    };
+
     //Handle Key clicks and update the game state accordingly
     const handleClickedKey = (clickedKey) => {
         if(currentWord.includes(clickedKey))
@@ -75,7 +127,7 @@ const GameBoard = () => {
                 currentWord[index] === clickedKey ? clickedKey : letter
             );
             setCorrectLetters(updatedCorrectLetters);
-            console.log("Correct Letters: ",updatedCorrectLetters);
+            //console.log("Correct Letters: ",updatedCorrectLetters, " size of correct letters ",updatedCorrectLetters.length);
         }
         else
         {
@@ -84,11 +136,23 @@ const GameBoard = () => {
         }
 
         setClickedKeys((previousKeys) => [...previousKeys, clickedKey]);
-        
+        /*
+        // Log the attempt
+        gameStatsManager.logAttempt({
+            recognitionMode: isMicrophoneEnabled ? "Microphone" : "Keyboard", // Track whether the attempt was made via voice or keyboard
+            currentWord: currentWord, // The word being guessed
+            correctLetters: correctLetters, // The current state of correct letters
+            incorrectLetters: incorrectLetters, // The current state of incorrect letters
+        });
+        */
     };
 
     // Toggle keyboard visibility
     const toggleMicrophone = () => {
+        //In case we listening, this should stop the microphone from listening
+        if(isMicrophoneEnabled)
+            stopListening();
+        
         setIsMicrophoneEnabled(!isMicrophoneEnabled);
     };
 
@@ -130,12 +194,24 @@ const GameBoard = () => {
             </ul>
 
             {/* Display the hint */}
+            {/* 
+            <HintDisplay 
+                currentWord={currentWord} 
+                difficulty={settings.difficulty} 
+                hintDescription={hintDescription} 
+               hintImage={hintImage} 
+            />*/}
+             {
             <h4 className="mb-4 text-center text-lg font-medium max-md:text-base">
                 Hint:{" "}
                 <b ref={hintRef} className="font-semibold text-neutral-700"></b>
             </h4>
+            }
 
             {/* Display the number of incorrect guesses and max guesses */}
+            {/**
+             * <ScoringPanel score={score} wrongGuesses={wrongGuesses} maxGuesses={maxGuesses} />
+             */}
             <h4 className="mb-4 text-center text-lg font-medium text-neutral-800 max-md:text-base">
                 Incorrect guesses:{" "}
                 <b className="font-bold text-red-500">
@@ -168,8 +244,12 @@ const GameBoard = () => {
             </>
             )}
 
+            {/** 
+             * {showFeedback && <GameFeedback score={score} />}
+             */}
+
         </div>
     );
 }
 
-export default GameBoard;
+export default HangmanBoardV2;

@@ -13,3 +13,8 @@ body {
   background-size: cover;
   background-position: center;
 }
+
+/* Add this CSS to rotate the arrow when the details element is open */
+details[open] summary span {
+  transform: rotate(90deg);
+}
