@@ -1,5 +1,6 @@
 const HANGMAN_URL = import.meta.env.VITE_HANGMAN_WORD_API;
 const HANGMAN_PROJECT_ID = import.meta.env.VITE_HANGMAN_PROJECT_ID;
+console.log(HANGMAN_URL, HANGMAN_PROJECT_ID);
 
 export const games = [
   { 
