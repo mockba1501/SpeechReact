@@ -1,6 +1,6 @@
 const HANGMAN_URL = import.meta.env.VITE_HANGMAN_WORD_API;
 const HANGMAN_PROJECT_ID = import.meta.env.VITE_HANGMAN_PROJECT_ID;
-console.log(HANGMAN_URL, HANGMAN_PROJECT_ID);
+//console.log(HANGMAN_URL, HANGMAN_PROJECT_ID);
 
 export const games = [
   { 
@@ -15,7 +15,7 @@ export const games = [
   { 
     id: "hangman2", 
     name: "Custom Hangman", 
-    description: "2nd Iteration with AI word generator.",
+    description: "2nd Iteration with AI word generator.\nLetter by Letter Guessing",
     requiresSettings: true,
     fetchWords: true,
     fetchPath: `${HANGMAN_URL}`, 
@@ -24,7 +24,7 @@ export const games = [
   { 
     id: "hangman3", 
     name: "Hangman Levels", 
-    description: "3rd Iteration with custom difficulty",
+    description: "3rd Iteration with custom difficulty.\nFull pronounciation Varient",
     requiresSettings: true,
     fetchWords: true,
     fetchPath: `${HANGMAN_URL}`, 

@@ -2,7 +2,7 @@ import axios from 'axios';
 import Cookie from 'universal-cookie';
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
-console.log('BASE_URL:', BASE_URL);
+//console.log('BASE_URL:', BASE_URL);
 
 export async function getTokenOrRefresh() {
     const cookie = new Cookie();
