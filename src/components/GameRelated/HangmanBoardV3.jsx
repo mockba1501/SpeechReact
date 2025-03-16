@@ -61,14 +61,14 @@ const HangmanBoardV3 = ({settings, words}) => {
         {
             const {word, hint} = words[wordIndex];
             setHintDescription(hint);
-            console.log("Current word is: ", word);
+            //console.log("Current word is: ", word);
             setCurrentWord(word);
             setIsGameReset(false);
         }
 
         if(wordIndex === words.length - 1)
         {
-            console.log("All words are completed");
+            //console.log("All words are completed");
             setAllWordsCompleted(true);
         }
     }, [wordIndex]); // I only need to activiate this effect when the wordIndex changes
@@ -128,7 +128,7 @@ const HangmanBoardV3 = ({settings, words}) => {
 
     const checkMatchingWords = (currentWord, checkWord) =>
     {
-        console.log("Checking Words ", currentWord, " ", checkWord);
+        //console.log("Checking Words ", currentWord, " ", checkWord);
         if (checkWord.toLowerCase() === currentWord.toLowerCase()) {
             setIsGameWon(true);
             setShowModal(true);
@@ -182,7 +182,7 @@ const HangmanBoardV3 = ({settings, words}) => {
             }
         });
     
-        console.log("Finished word categorization", categorized);
+        //console.log("Finished word categorization", categorized);
         return categorized;
     };
 
@@ -243,7 +243,7 @@ const HangmanBoardV3 = ({settings, words}) => {
 
                     const categorizedLetter = categorizedLetters[index]; // Get the current letter object
                     const userLetter = isMicrophoneEnabled? categorizedLetters[index]?.letter:userSpelling[index];
-                    console.log(userLetter);
+                    //console.log(userLetter);
                     return (
                         <li
                             key={index}

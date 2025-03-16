@@ -57,17 +57,17 @@ const HangmanBoardV2 = ({settings, words}) => {
 
     //Effect to initialize the game board with a random word
     useEffect(() => {
-      console.log("Selected Words:", words, " current word index ", wordIndex);
+      //console.log("Selected Words:", words, " current word index ", wordIndex);
 
         resetGameState();
         if(words.length > 0 && wordIndex < words.length)
         {
-            console.log("Assigning new word to the game board!!!");
+            //console.log("Assigning new word to the game board!!!");
             //Get a random word from the word list
             const {word, hint} = words[wordIndex];
             hintRef.current.innerText = hint;
             //setHintDescription(hint);
-            console.log("Current word is: ", word);
+            //console.log("Current word is: ", word);
             setCurrentWord(word);
             setCorrectLetters(new Array(word.length).fill(""));
             setIsGameReset(false);
@@ -75,7 +75,7 @@ const HangmanBoardV2 = ({settings, words}) => {
 
         if(wordIndex === words.length - 1)
         {
-            console.log("All words are completed");
+            //console.log("All words are completed");
             setAllWordsCompleted(true);
         }
     }, [wordIndex]); // I only need to activiate this effect when the wordIndex changes
@@ -85,7 +85,7 @@ const HangmanBoardV2 = ({settings, words}) => {
         if(currentWord && correctLetters.length)
         {
             let finishGame = false;
-            console.log("Checking game status and current word is: ", currentWord);
+            //console.log("Checking game status and current word is: ", currentWord);
             //if number of wrong guesses is greater than or equal to the max guesses, the game is lost
             //Lose Game Condition
             if(wrongGuesses >= maxGuesses)
@@ -110,7 +110,7 @@ const HangmanBoardV2 = ({settings, words}) => {
     }, [correctLetters, wrongGuesses, currentWord, setIsGameWon, setShowModal]);
     
     const resetGameState = () => {
-        console.log("Resetting game state is called!!!");
+        //console.log("Resetting game state is called!!!");
         setCorrectLetters([]);
         setIncorrectLetters([]);
         setClickedKeys([]);
@@ -127,7 +127,7 @@ const HangmanBoardV2 = ({settings, words}) => {
                 currentWord[index] === clickedKey ? clickedKey : letter
             );
             setCorrectLetters(updatedCorrectLetters);
-            console.log("Correct Letters: ",updatedCorrectLetters, " size of correct letters ",updatedCorrectLetters.length);
+            //console.log("Correct Letters: ",updatedCorrectLetters, " size of correct letters ",updatedCorrectLetters.length);
         }
         else
         {

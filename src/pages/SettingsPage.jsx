@@ -25,7 +25,7 @@ const SettingsPage = () => {
     console.log("Trying to fetch words...");
     if (!game.fetchWords) return; // Skip API call if not needed
     
-    /*
+    
     setLoading(true);
     
     const payload = {
@@ -64,13 +64,14 @@ const SettingsPage = () => {
         console.error("Error fetching words:", error);
     }
     setLoading(false);
-    */
+    
+    /*
     // Temporary solution to fetch words
     const data = wordListCustom;
     console.log(data);
     setWordChoices(data);
     setWordsFetched(true);
-    
+    */
   };
 
   useEffect(() => {

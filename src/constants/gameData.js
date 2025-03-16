@@ -29,6 +29,7 @@ export const games = [
     fetchPath: `${HANGMAN_URL}`, 
     projectID: `${HANGMAN_PROJECT_ID}`
   },
+  /*
   { 
     id: "word-puzzle2", 
     name: "Word Puzzle", 
@@ -37,7 +38,7 @@ export const games = [
     fetchWords: false,
     fetchPath: "", 
     projectID: ""
-  },
+  },*/
 ];
 
 export const gameSettings = {
