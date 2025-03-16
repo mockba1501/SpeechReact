@@ -1,5 +1,6 @@
 // HangmanBoardV3.test.tsx
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom/vitest';
 import { MemoryRouter } from 'react-router-dom'; // Import MemoryRouter
 import HangmanBoardV3 from './HangmanBoardV3';
 import { GameProvider } from '../../context/GameContext';
@@ -32,7 +33,7 @@ const mockGameStatsManager = {
   };
   
 describe("HangmanBoardV3", () => {
-    it("initializes with the correct game settings", () => {
+    it("initializes with the correct game settings", async () => {
       render(
         <MemoryRouter>
         <GameProvider value={mockContext}>
@@ -41,20 +42,30 @@ describe("HangmanBoardV3", () => {
         </MemoryRouter>
       );
   
-      expect(mockGameStatsManager.setSessionSettings).toHaveBeenCalledWith({ difficulty: "medium" });
+      await waitFor(() => {
+        expect(mockGameStatsManager.setSessionSettings).toHaveBeenCalledWith({
+          difficulty: "medium",
+        });
+      });
     });
   
-    it("updates the current word when wordIndex changes", () => {
-      mockContext.wordIndex = 1;
+    it("updates the current word when wordIndex changes", async() => {
+        const updatedContext = {
+            ...mockContext,
+            wordIndex: 1,
+          };
+          
       render(
         <MemoryRouter>
-        <GameProvider value={mockContext}>
+        <GameProvider value={updatedContext}>
           <HangmanBoardV3 settings={{ difficulty: "medium" }} words={[{ word: "banana", hint: "A fruit" }]} />
         </GameProvider>
         </MemoryRouter>
       );
   
-      expect(mockContext.setCurrentWord).toHaveBeenCalledWith("banana");
+      await waitFor(() => {
+        expect(updatedContext.setCurrentWord).toHaveBeenCalledWith("banana");
+      });
     });
   
     it("toggles microphone mode", () => {
@@ -82,16 +93,24 @@ describe("HangmanBoardV3", () => {
       expect(screen.getByText("3 / 6")).toBeInTheDocument();
     });
   
-    it("ends the game when wrongGuesses exceed maxGuesses", () => {
-      mockContext.wrongGuesses = 6;
+    it("ends the game when wrongGuesses exceed maxGuesses", async() => {
+      // Update the context with wrongGuesses exceeding maxGuesses
+  const updatedContext = {
+    ...mockContext,
+    wrongGuesses: 6, // maxGuesses is 6
+  };
+    //    mockContext.wrongGuesses = 6;
   
       render(
-        <GameContext.Provider value={mockContext}>
+        <GameContext.Provider value={updatedContext}>
           <HangmanBoardV3 settings={{}} words={[]} />
         </GameContext.Provider>
       );
   
-      expect(mockContext.setShowModal).toHaveBeenCalledWith(true);
-      expect(mockContext.setIsGameWon).toHaveBeenCalledWith(false);
-    });
+      // Wait for the game-over logic to run
+  await waitFor(() => {
+    expect(updatedContext.setShowModal).toHaveBeenCalledWith(true);
+    expect(updatedContext.setIsGameWon).toHaveBeenCalledWith(false);
+  });
+});
 });
