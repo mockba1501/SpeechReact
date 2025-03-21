@@ -14,7 +14,13 @@ const GameOverModal = ({isVersion2 = false}) => {
             resetGameBoard
         } = useContext(GameContext);
         
-        console.log("All words completed: ", allWordsCompleted);
+    console.log("All words completed: ", allWordsCompleted);
+    
+    // Helper function to handle button clicks and blur the button
+    const handleButtonClick = (handler) => (event) => {
+        handler(); // Call the original handler
+        event.currentTarget.blur(); // Blur the button to remove focus
+    };
 
     return (
         //Model container with conditional visibility
@@ -22,6 +28,7 @@ const GameOverModal = ({isVersion2 = false}) => {
             bg-[rgba(0,0,0,0.5)] px-3 backdrop-blur-lg 
             ${showModal ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"} 
              transition-opacity duration-300`}
+            aria-hidden={!showModal} // Hide from screen readers when not visible
         >
             <div className="flex max-w-[420px] flex-grow flex-col items-center rounded-lg border bg-white p-7 text-center shadow-2xl">
                 {/* Display appropriate gif based on game outcome */}
@@ -52,14 +59,16 @@ const GameOverModal = ({isVersion2 = false}) => {
                     // Version 2: Sequential Words Game & V3
                     allWordsCompleted ? (
                         <button
-                            onClick={handleFeedback}
+                            onClick={handleButtonClick(handleFeedback)}
+                            tabIndex={showModal ? 0 : -1} // Disable focus when hidden
                             className="bg-blue-500 text-white px-4 py-2 rounded"
                         >
                             Go to Feedback
                         </button>
                     ) : (
                         <button
-                            onClick={handleNextWord}
+                            onClick={handleButtonClick(handleNextWord)}
+                            tabIndex={showModal ? 0 : -1} // Disable focus when hidden
                             className="bg-blue-500 text-white px-4 py-2 rounded mr-2"
                         >
                             Next Word
@@ -69,13 +78,15 @@ const GameOverModal = ({isVersion2 = false}) => {
                     // Version 1: Original Game
                     <>
                         <button
-                            onClick={handleRestart}
+                            onClick={handleButtonClick(handleRestart)}
+                            tabIndex={showModal ? 0 : -1} // Disable focus when hidden
                             className="bg-blue-500 text-white px-4 py-2 rounded mr-2"
                         >
                             Play Again
                         </button>
                         <button
-                            onClick={handleStopPlaying}
+                            onClick={handleButtonClick(handleStopPlaying)}
+                            tabIndex={showModal ? 0 : -1} // Disable focus when hidden
                             className="bg-red-500 text-white px-4 py-2 rounded"
                         >
                             Stop Playing
