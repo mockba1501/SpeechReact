@@ -211,6 +211,7 @@ class GameStatsManager {
 
   resetStats() {
     this.attemptsByWord = {}; // Clear stats when starting a new game
+    console.log("Game stats manager reset");
   }
 }
 

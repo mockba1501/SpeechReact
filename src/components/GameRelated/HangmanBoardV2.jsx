@@ -52,6 +52,9 @@ const HangmanBoardV2 = ({settings, words}) => {
     
     //Pass the game settings once you load the page 
     useEffect(() => {
+        resetGameState();
+        setWordIndex(0);
+        gameStatsManager.resetStats();
         gameStatsManager.setSessionSettings(settings,"v2");
     },[])
 

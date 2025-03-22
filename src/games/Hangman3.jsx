@@ -1,12 +1,35 @@
 import HangmanBoardV3 from "../components/GameRelated/HangmanBoardV3";
 import GameOverModal from "../components/GameRelated/GameOverModal";
 import HangmanIllustration from "../components/GameRelated/HangmanIllustration";
+import GameContext from "../context/GameContext";
 import { useLocation } from "react-router-dom";
+import { useEffect, useContext } from "react";
 
 const Hangman3 = () => {
     const location = useLocation();
+    
     const { settings, words } = location.state || { settings: {}, words: [] };
+    const { resetGameBoard } = useContext(GameContext); // Call reset function from context
     console.log("Selected Words:", words);
+
+    useEffect(() => {
+      const handleBackNavigation = (event) => {
+        event.preventDefault();
+
+        const userConfirmed = window.confirm("Are you sure you want to exit the game?");
+        if(!userConfirmed) {
+          window.history.pushState(null, null, window.location.pathname);
+        }
+        else {
+          resetGameBoard();
+        }
+      }
+
+      window.addEventListener("popstate", handleBackNavigation);
+      return () => {
+        window.removeEventListener("popstate", handleBackNavigation);
+      }
+    }, []);
 
     return (
         // Wrapping the app with GameProvider for state management

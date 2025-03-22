@@ -35,18 +35,22 @@ export const GameProvider = ({ children }) => {
         setIsMicrophoneEnabled(true);
         setWordIndex(0);
         setAllWordsCompleted(false);
+        console.log("Game board is reset!!!");
     };
 
     const handleNextWord = () => {
         setShowModal(false);
         setWordIndex((prev) => prev + 1);
+        console.log("Next word button is triggered!!")
       //  resetGameBoard();
     };
 
     const handleRestart = () => {
         setAllWordsCompleted(false); // Reset completion state
         setShowModal(false);
+        setWordIndex(0);
         resetGameBoard();
+        console.log("Restart Operation");
     };
 
     const handleFeedback = () => {

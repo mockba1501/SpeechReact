@@ -37,7 +37,7 @@ const HangmanBoardV3 = ({settings, words}) => {
             wordIndex,
             setWordIndex,
             setAllWordsCompleted,
-            gameStatsManager
+            gameStatsManager,
             } = useContext(GameContext);    
 
     const { recognizedWord, isListening, error, startListening, stopListening } = useFullWordRecognition();
@@ -51,6 +51,9 @@ const HangmanBoardV3 = ({settings, words}) => {
 
     //Pass the game settings once you load the page 
     useEffect(() => {
+        setWordIndex(0);
+        resetGameState();
+        gameStatsManager.resetStats();
         gameStatsManager.setSessionSettings(settings,"v3");
     },[])
     
@@ -143,6 +146,7 @@ const HangmanBoardV3 = ({settings, words}) => {
 
     const resetGameState = () => {
         console.log("Resetting game state is called!!!");
+        //setWordIndex(0);
         setClickedKeys([]);
         setWrongGuesses(0);
         setIsGameWon(false);
