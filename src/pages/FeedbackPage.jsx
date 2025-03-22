@@ -9,12 +9,25 @@ import {ExpandMore} from "@mui/icons-material";
 
 const FeedbackPage = () => {
     const {
-        gameStatsManager
+        gameStatsManager,
+        resetGameBoard,
     } = useContext(GameContext);
     const [results, setResults] = useState(null);
     const [settings, setSettings] = useState(null);
     const navigate = useNavigate();
     
+    useEffect(() => {
+        const handleBackNavigation = (event) => {
+          resetGameBoard();
+          handlePlayAgain();
+        }
+  
+        window.addEventListener("popstate", handleBackNavigation);
+        return () => {
+          window.removeEventListener("popstate", handleBackNavigation);
+        }
+      }, []);
+
     // Save to local storage or context
     useEffect(() => {
         const results = gameStatsManager.getAllResults();

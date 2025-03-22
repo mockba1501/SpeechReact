@@ -14,15 +14,7 @@ const Hangman3 = () => {
 
     useEffect(() => {
       const handleBackNavigation = (event) => {
-        event.preventDefault();
-
-        const userConfirmed = window.confirm("Are you sure you want to exit the game?");
-        if(!userConfirmed) {
-          window.history.pushState(null, null, window.location.pathname);
-        }
-        else {
-          resetGameBoard();
-        }
+        resetGameBoard();
       }
 
       window.addEventListener("popstate", handleBackNavigation);
