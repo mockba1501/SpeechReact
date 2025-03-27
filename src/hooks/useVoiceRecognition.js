@@ -70,8 +70,21 @@ const useVoiceRecognition = () => {
         setError(null);
 
         try {
+            // Check microphone permissions
+            const micPermission = await navigator.mediaDevices.getUserMedia({ audio: true })
+            .then(() => true)
+            .catch(() => false);
+
+            if (!micPermission) {
+                console.error("Microphone access denied or unavailable.");
+                setError("Microphone access denied. Please allow access in browser settings.");
+                setIsListening(false);
+                return;
+            }
+
             const tokenObj = await getTokenOrRefresh();
             if (!tokenObj.authToken) {
+                alert("Voice features are still initializing. Please try again in a moment.");
                 console.error("Authorization token is null or undefined");
                 throw new Error("Authorization token is null or undefined");
             }
