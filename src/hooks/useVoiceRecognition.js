@@ -7,19 +7,23 @@ import * as speechsdk from 'microsoft-cognitiveservices-speech-sdk';
 
 // Special cases sorted alphabetically
 const specialCases = {
-    "ay": "a",
+    "aih": "a",
+    "ah": "a",
     "bee": "b",
     "be": "b",
     "sea": "c",
     "see": "c",
     "dee": "d",
+    "ee": "e",
+    "eee": "e",
+    "if": "f",
     "eff": "f",
     "gee": "g",
     "he": "h",
     "aitch": "h",
     "itch": "h",
     "eye": "i",
-    "Ay": "i",
+    "ay": "i",
     "jay": "j",
     "kay": "k",
     "okay": "k",
@@ -57,6 +61,12 @@ const getRecognizedLetter = (text) => {
     console.log("Cleaning ", text); 
     // Convert to lowercase and remove non-alphabetic characters
     let cleanedText = text.toLowerCase().replace(/[^a-z\s]/g, '').trim();
+
+    if (cleanedText.length === 1)
+    {
+        console.log("Single letter detected: ", cleanedText);
+        return cleanedText; // Return the letter if it's a single character
+    }
 
     // Check if the cleaned text is a special case
     if (specialCases[cleanedText]) {
@@ -181,6 +191,22 @@ const useVoiceRecognition = () => {
         });
 
         const webSpeechPromise = new Promise((resolve, reject) => {
+            let promiseSettled = false; // Flag to track if the promise has been settled
+
+            const resolveOnce = (value) => {
+                if(!promiseSettled) {
+                    promiseSettled = true;
+                    resolve(value);
+                }
+            };
+
+            const rejectOnce = (error) => {
+                if (!promiseSettled) {
+                    promiseSettled = true;
+                    reject(error);
+                }
+            };
+
             const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
             recognition.lang = "en-US";
             recognition.continuous = false; // Keep false for single utterances
@@ -190,7 +216,8 @@ const useVoiceRecognition = () => {
             let timeoutId = setTimeout(() => {
                 console.warn("🟡 Web Speech Timeout No response detected.");
                 recognition.stop();
-                resolve([{ text: "", confidence: 0, source: 'web-speech', error: "timeout" }]);
+                //rejectOnce(new Error("Web Speech API timeout"));
+                resolveOnce([{ text: "", confidence: 0, source: 'web-speech', error: "timeout" }]);
             }, 5000); // Ensure a timeout in case of no speech detection
 
             recognition.onstart = () => console.log("🟢 Web Speech API Started");
@@ -208,7 +235,7 @@ const useVoiceRecognition = () => {
                         source: 'web-speech'
                     });
                 }
-                resolve(results.length > 0 ? results : [{ text: "", confidence: 0, source: 'web-speech' }]);
+                resolveOnce(results.length > 0 ? results : [{ text: "", confidence: 0, source: 'web-speech' }]);
             };
 
             recognition.onsoundstart = () => console.log("🟡 Web Speech - detected sound");
@@ -217,7 +244,7 @@ const useVoiceRecognition = () => {
             recognition.onerror = (event) => {
                 clearTimeout(timeoutId); 
                 console.error("🔴 Web Speech API Error:", event.error);
-                resolve({
+                resolveOnce({
                     text: "",
                     confidence: 0,
                     source: 'web-speech',
@@ -228,6 +255,12 @@ const useVoiceRecognition = () => {
             recognition.onend = () => {
                 clearTimeout(timeoutId);
                 console.log("🟢 Web Speech API Ended");
+
+                // Add this: Resolve with empty result if not already resolved/rejected
+                if (!promiseSettled) {
+                    console.warn("🟠 Web Speech ended without result or error");
+                    resolveOnce([{ text: "", confidence: 0, source: 'web-speech', error: "no-result" }]);
+                }
             }
 
             recognition.start();
@@ -248,7 +281,8 @@ const useVoiceRecognition = () => {
     });
 
     console.log("Results from both recognizers: ", results);
-    const finalResult = selectBestResult(results);
+    //const finalResult = selectBestResult(results);
+    const finalResult = getAllBestResults(results);
 
     if (!finalResult) {
         console.error("❌ Error: No valid match found! Returning fallback.");
@@ -256,6 +290,53 @@ const useVoiceRecognition = () => {
     }
     console.log("Final Result: ", finalResult);
     setRecognizedText(finalResult);
+    };
+
+    const getAllBestResults = (results) => {
+        console.log("Raw results from recognizers:", results);
+        const [msResult, webResults] = results;
+        const allValidResults = [];
+    
+        // Helper function to clean and validate a result
+        const processResult = (text, confidence, source) => {
+            const cleanedLetter = getRecognizedLetter(text); // Your existing cleaning function
+            if (!cleanedLetter || cleanedLetter.trim() === "") {
+                console.log(`Ignoring invalid result: "${text}" (from ${source})`);
+                return null;
+            }
+            return {
+                original: text,       // Original recognized text (e.g., "A B C")
+                letter: cleanedLetter, // Cleaned single letter (e.g., "A")
+                confidence: confidence || 0.5,
+                source: source        // 'microsoft' or 'web-speech'
+            };
+        };
+    
+        // Process Microsoft result (if exists)
+        if (msResult?.text) {
+            const processed = processResult(
+                msResult.text,
+                msResult.confidence,
+                'microsoft'
+            );
+            if (processed) allValidResults.push(processed);
+        }
+    
+        // Process Web Speech results (force array format)
+        const webResultsArray = Array.isArray(webResults) ? webResults : [webResults];
+        webResultsArray.forEach(result => {
+            if (result?.text) {
+                const processed = processResult(
+                    result.text,
+                    result.confidence,
+                    'web-speech'
+                );
+                if (processed) allValidResults.push(processed);
+            }
+        });
+    
+        console.log("All valid results:", allValidResults);
+        return allValidResults.length > 0 ? allValidResults : [];
     };
 
     const selectBestResult = (results) => {
@@ -274,7 +355,7 @@ const useVoiceRecognition = () => {
         // Ensure webResults is always an array
         const webResultsArray = Array.isArray(webResults) ? webResults : [webResults];
         webResultsArray.forEach(result => {
-            if (result.text) {
+            if (result.text !== null && result.text !== "") {
                 allResults.push({
                     text: result.text,
                     confidence: result.confidence || 0.5,
@@ -320,13 +401,14 @@ const useVoiceRecognition = () => {
         // If a direct letter match was found, return it
         const singleLetterMatch = processedResults.find(res => /^[a-z]$/.test(res.letter));
         if (singleLetterMatch) {
+            console.log("Single letter match found:", singleLetterMatch.letter);
             return singleLetterMatch.letter;
         }
 
         // Sort by confidence (Microsoft always prioritized)
         processedResults.sort((a, b) => b.confidence - a.confidence);
         console.log("Sorted Results: ", processedResults);
-        return processedResults[0] || '';
+        return processedResults[0].letter || '';
     };
 
     // Cancel recognition
