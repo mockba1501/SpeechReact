@@ -35,6 +35,11 @@ const GameBoard = () => {
             setIsMicrophoneEnabled } = useContext(GameContext);    
     const { recognizedText, isListening, error, startListening, stopListening } = useVoiceRecognition();
     
+    const [recognitionMessage, setRecognitionMessage] = useState({
+        type: 'info',
+        text: 'Press the mic button and say a letter'
+    });
+
     //Reference for the hint element
     const hintRef = useRef(null);
     const maxGuesses = 6;
@@ -69,22 +74,29 @@ const GameBoard = () => {
     
     //Handle Key clicks and update the game state accordingly
     const handleClickedKey = (clickedKey) => {
-        if(currentWord.includes(clickedKey))
-        {
+        console.log("Clicked Key: ",clickedKey);
+
+        // Skip if key was already guessed (correct or incorrect)
+        if (clickedKeys.includes(clickedKey)) {
+            console.log("Key already guessed:", clickedKey);
+            return;
+        }
+
+        setClickedKeys((previousKeys) => [...previousKeys, clickedKey]);
+
+        if(currentWord.includes(clickedKey) ) {  // Only add if not already present
+        
             const updatedCorrectLetters = correctLetters.map((letter,index)=>
                 currentWord[index] === clickedKey ? clickedKey : letter
             );
             setCorrectLetters(updatedCorrectLetters);
             console.log("Correct Letters: ",updatedCorrectLetters);
         }
-        else
-        {
+        else {  // Only add if not already present
+        
             setIncorrectLetters((previousLetters) => [...previousLetters, clickedKey]);
             setWrongGuesses((previousGuesses) => previousGuesses + 1);
         }
-
-        setClickedKeys((previousKeys) => [...previousKeys, clickedKey]);
-        
     };
 
     // Toggle keyboard visibility
@@ -96,12 +108,69 @@ const GameBoard = () => {
         setIsMicrophoneEnabled(!isMicrophoneEnabled);
     };
 
+    // Updated recognition handler
     useEffect(() => {
-        if (recognizedText) {
-                handleClickedKey(recognizedText);
+        console.log("Recognized Text: ", recognizedText);
+        // Clear message after 3 seconds
+        const timer = recognitionMessage? setTimeout(() => setRecognitionMessage(null), 3000) : null;
+
+        if (!isListening) {
+            setRecognitionMessage(null);
+            
         }
+
+        if (!recognizedText || recognizedText.length === 0) {
+            setRecognitionMessage({
+                type: 'error',
+                text: 'Sorry could not recognize! Please try speaking clearly.'
+            });
+            return;
+        }
+
+        // Find best candidate (existing logic)
+        console.log("Current Word: ", currentWord);
+        const validLetters = recognizedText.filter(item => 
+        {
+            console.log("Item: ", item);
+            return currentWord.includes(item.letter.toLowerCase())
+        }
+        );
+        validLetters.sort((a, b) => b.confidence - a.confidence);
+        console.log("Valid Letters: ", validLetters);
+        const fallbackLetter = getFallbackLetter(recognizedText);
+
+        // Determine action based on results
+        if (validLetters.length > 0) {
+            const bestLetter = validLetters[0].letter;
+            setRecognitionMessage({
+                type: 'success',
+                text: `Recognized: ${bestLetter}`
+            });
+            handleClickedKey(bestLetter);
+        } 
+        else if (fallbackLetter) {
+            setRecognitionMessage({
+                type: 'warning',
+                text: `Heard: ${fallbackLetter} (not in word)`
+            });
+            handleClickedKey(fallbackLetter);
+        }
+        else {
+            setRecognitionMessage({
+                type: 'error',
+                text: 'No valid letters detected. Please try again.'
+            });
+        }
+
+        return () => clearTimeout(timer);
     }, [recognizedText]);
     
+    const getFallbackLetter = (results) => {
+        if (!results || results.length === 0) return null;
+        const sorted = [...results].sort((a, b) => b.confidence - a.confidence);
+        return sorted[0].letter;
+    };
+
     return (
         <div className="flex flex-col items-center">
             {/* Position the Switch inside the game's white container */}
@@ -170,6 +239,17 @@ const GameBoard = () => {
                 </h4>)
                 }
             </>
+            )}
+
+            {/* Display recognition messages */}
+            {isMicrophoneEnabled && recognitionMessage && (
+                <div className={`my-2 p-2 rounded text-center ${
+                    recognitionMessage.type === 'error' ? 'bg-red-100 text-red-800' :
+                    recognitionMessage.type === 'warning' ? 'bg-yellow-100 text-yellow-800' :
+                    'bg-green-100 text-green-800'
+                }`}>
+                    {recognitionMessage.text}
+                </div>
             )}
 
         </div>
