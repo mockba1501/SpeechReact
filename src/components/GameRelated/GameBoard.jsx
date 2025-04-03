@@ -165,7 +165,6 @@ const GameBoard = () => {
         return () => clearTimeout(timer);
     }, [recognizedText]);
     
-    // Helper function remains the same
     const getFallbackLetter = (results) => {
         if (!results || results.length === 0) return null;
         const sorted = [...results].sort((a, b) => b.confidence - a.confidence);
