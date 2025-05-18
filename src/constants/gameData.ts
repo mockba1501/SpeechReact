@@ -1,8 +1,26 @@
+interface Game {
+  id: string,
+  name: string,
+  description: string,
+  requiresSettings: boolean,
+  fetchWords: boolean,
+  fetchPath: string,
+  projectID: string
+}
+
+interface GameSetting {
+  id: string,
+  label: string,
+  options: string[]
+}
+
+type GameSettings = Record<string, GameSetting[]>;
+
 const HANGMAN_URL = import.meta.env.VITE_HANGMAN_WORD_API;
 const HANGMAN_PROJECT_ID = import.meta.env.VITE_HANGMAN_PROJECT_ID;
 //console.log(HANGMAN_URL, HANGMAN_PROJECT_ID);
 
-export const games = [
+export const games: Game[] = [
   { 
     id: "hangman", 
     name: "Voice Hangman", 
@@ -18,8 +36,8 @@ export const games = [
     description: "2nd Iteration with AI word generator.\nLetter by Letter Guessing",
     requiresSettings: true,
     fetchWords: true,
-    fetchPath: `${HANGMAN_URL}`, 
-    projectID: `${HANGMAN_PROJECT_ID}`
+    fetchPath: HANGMAN_URL, 
+    projectID: HANGMAN_PROJECT_ID
   },
   { 
     id: "hangman3", 
@@ -27,8 +45,8 @@ export const games = [
     description: "3rd Iteration with custom difficulty.\nFull pronounciation Varient",
     requiresSettings: true,
     fetchWords: true,
-    fetchPath: `${HANGMAN_URL}`, 
-    projectID: `${HANGMAN_PROJECT_ID}`
+    fetchPath: HANGMAN_URL, 
+    projectID: HANGMAN_PROJECT_ID
   },
   /*
   { 
@@ -42,7 +60,7 @@ export const games = [
   },*/
 ];
 
-export const gameSettings = {
+export const gameSettings: GameSettings = {
     "hangman": [ ], // No settings available for Hangman
     "word-puzzle": [
       { id: "timeLimit", label: "Time Limit", options: ["30s", "60s", "90s"] },

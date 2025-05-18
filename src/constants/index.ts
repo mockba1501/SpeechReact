@@ -1,5 +1,9 @@
+interface Word {
+  word: string,
+  hint: string
+}
 // List of words and their corresponding hints for the game
-export const wordListCustom = [
+export const wordListCustom:Word[] = [
     {
       word: "guitar",
       hint: "A musical instrument with strings.",
