@@ -11,7 +11,7 @@ import Hangman2 from "./games/Hangman2";
 import Hangman3 from "./games/Hangman3";
 
 import Layout from "./components/Layout/Layout";
-import App from "./App";
+
 //import WordPuzzleGame from "./games/wordPuzzle/WordPuzzleGame";
 
 const AppRoutes = () => (

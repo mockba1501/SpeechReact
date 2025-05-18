@@ -1,6 +1,3 @@
-// Importing necessary components and context
-import { GameProvider } from "./context/GameContext";
-
 import MainMenu from "./pages/MainMenu";
 
 // Main application component

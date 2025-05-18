@@ -4,7 +4,6 @@ import { useContext, useEffect, useRef, useState } from "react";
 import GameContext from "../../context/GameContext";
 import GameKeyboard from "./GameKeyboard";
 import useVoiceRecognition from "../../hooks/useVoiceRecognition";
-import {wordList} from "../../constants";
 //New logic to be implemented
 //import ScoringPanel from "./ScoringPanel";
 //import DifficultyControls from "./DifficultyControls";

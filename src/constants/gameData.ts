@@ -18,7 +18,10 @@ type GameSettings = Record<string, GameSetting[]>;
 
 const HANGMAN_URL = import.meta.env.VITE_HANGMAN_WORD_API;
 const HANGMAN_PROJECT_ID = import.meta.env.VITE_HANGMAN_PROJECT_ID;
-//console.log(HANGMAN_URL, HANGMAN_PROJECT_ID);
+
+if (!HANGMAN_URL || !HANGMAN_PROJECT_ID) {
+  throw new Error("Missing required environment variables");
+}
 
 export const games: Game[] = [
   { 
@@ -60,6 +63,13 @@ export const games: Game[] = [
   },*/
 ];
 
+/*
+enum Difficulty {
+  Easy = "Easy",
+  Medium = "Medium",
+  Hard = "Hard"
+}
+*/
 export const gameSettings: GameSettings = {
     "hangman": [ ], // No settings available for Hangman
     "word-puzzle": [

@@ -5,7 +5,6 @@ import GameContext from "../context/GameContext";
 //Styling
 import Box from '@mui/material/Box';
 import { Button, Typography, List, ListItem, ListItemText } from "@mui/material";
-import {ExpandMore} from "@mui/icons-material";
 
 const FeedbackPage = () => {
     const {
