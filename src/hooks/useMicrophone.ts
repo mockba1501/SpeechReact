@@ -1,10 +1,15 @@
 import { useState, useEffect } from 'react';
+type MicStatus = {
+  available: boolean | null,  // null=checking, true=available, false=unavailable
+  permission: boolean | null,  // null=checking, true=granted, false=denied
+  enabled: boolean | null  // null=checking, true=enabled, false=disabled
+}
 
 const useMicrophone = () => {
-  const [micStatus, setMicStatus] = useState({
-    available: null,  // null=checking, true=available, false=unavailable
-    permission: null,  // null=checking, true=granted, false=denied
-    enabled: null  // null=checking, true=enabled, false=disabled
+  const [micStatus, setMicStatus] = useState<MicStatus>({
+    available: null, 
+    permission: null,
+    enabled: null 
   });
 
   const requestMicrophoneAccess = async () => {
@@ -13,22 +18,26 @@ const useMicrophone = () => {
       const track = stream.getAudioTracks()[0];
       setMicStatus({ available: true, permission: true, enabled: track.enabled });
       
+      //cleaning up the stream
       stream.getTracks().forEach(track => track.stop());
       return true;
-    } catch (error) {
+    } catch (error: unknown) {
       let errorMessage = "Microphone access error occurred";
       
-      if (error.name === 'NotAllowedError') {
-        errorMessage = "Permission was denied. To enable later:\n" +
-          "1. Click the lock icon in your address bar\n" +
-          "2. Go to 'Site settings'\n" +
-          "3. Change microphone to 'Allow'";
-      } else if (error.name === 'NotFoundError') {
-        errorMessage = "No microphone detected. Please connect a microphone and try again.";
-      } else if (error.name === 'NotReadableError') {
-        errorMessage = "Microphone is already in use by another application.";
-      }
+      if(error instanceof DOMException) {
+
       
+        if (error.name === 'NotAllowedError') {
+          errorMessage = "Permission was denied. To enable later:\n" +
+            "1. Click the lock icon in your address bar\n" +
+            "2. Go to 'Site settings'\n" +
+            "3. Change microphone to 'Allow'";
+        } else if (error.name === 'NotFoundError') {
+          errorMessage = "No microphone detected. Please connect a microphone and try again.";
+        } else if (error.name === 'NotReadableError') {
+          errorMessage = "Microphone is already in use by another application.";
+        }
+      }
       alert(errorMessage);
       setMicStatus(prev => ({
         ...prev, 
@@ -75,8 +84,8 @@ const useMicrophone = () => {
         stream.getTracks().forEach(track => track.stop());
         }
         catch (error) {
-        console.error("Microphone check failed:", error);
-        setMicStatus({ available: false, permission: false });
+        console.error("Microphone check failed:", error); //Double check if enabled should be false or null!?
+        setMicStatus({ available: false, permission: false, enabled: false });
         }
     };
 

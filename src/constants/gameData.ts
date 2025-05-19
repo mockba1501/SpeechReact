@@ -16,8 +16,8 @@ interface GameSetting {
 
 type GameSettings = Record<string, GameSetting[]>;
 
-const HANGMAN_URL = import.meta.env.VITE_HANGMAN_WORD_API;
-const HANGMAN_PROJECT_ID = import.meta.env.VITE_HANGMAN_PROJECT_ID;
+const HANGMAN_URL:string = import.meta.env.VITE_HANGMAN_WORD_API;
+const HANGMAN_PROJECT_ID:string = import.meta.env.VITE_HANGMAN_PROJECT_ID;
 
 if (!HANGMAN_URL || !HANGMAN_PROJECT_ID) {
   throw new Error("Missing required environment variables");
