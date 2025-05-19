@@ -1,29 +1,46 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { games, gameSettings } from "../constants/gameData";
-import { wordListCustom } from "../constants";
+import { games, gameSettings, GameDetails, GameSetting } from "../constants/gameData";
 
 const SettingsPage = () => {
-  const { gameId } = useParams();
+  const { gameId } = useParams<{gameId: string}>();
   const navigate = useNavigate();
 
-  const settings = gameSettings[gameId] || [];
-  const game = games.find((g) => g.id === gameId);
+  const settings: GameSetting[] = gameSettings[gameId as keyof GameSetting] || [];
+  const gameDetails: GameDetails|undefined = games.find((g:GameDetails) => g.id === gameId);
   
+  // Handle missing game first
+  if (!gameDetails) {
+    return (
+      <div className="flex flex-col gap-6 rounded-lg bg-white px-10 py-14 shadow-xl max-md:px-6 max-md:py-10">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-black-600">Sorry the Game you are trying to access could not be found!</h1>
+          <button 
+            onClick={() => navigate('/')}
+            className="mt-4 rounded bg-blue-500 px-4 py-2 text-white"
+          >
+            Return to Main Menu
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  type SelectedSettings = Record<string,string>;
   //Initialize the selected settings with default values
-  const [selectedSettings, setSelectedSettings] = useState(() =>
-    settings.reduce((acc, setting) => {
-      acc[setting.id] = setting.options[0];
-      return acc;
-    }, {})
+  const [selectedSettings, setSelectedSettings] = useState<SelectedSettings>(() =>
+    settings.reduce((acc, setting) => ({
+      ...acc,
+      [setting.id] : setting.options[0]
+    }), {} as SelectedSettings)
   );
-  const [wordChoices, setWordChoices] = useState([]);   // Store words to be used in the game
+  const [wordChoices, setWordChoices] = useState<string[]>([]);   // Store words to be used in the game
   const [loading, setLoading] = useState(false);        // Loading state
   const [wordsFetched, setWordsFetched] = useState(false); // Ensure that words fetched successfully
   
   const fetchWordChoices = async () => {
     console.log("Trying to fetch words...");
-    if (!game.fetchWords) return; // Skip API call if not needed
+    if (!gameDetails.fetchWords) return; // Skip API call if not needed
     
     
     setLoading(true);
@@ -38,12 +55,12 @@ const SettingsPage = () => {
                       "age": selectedSettings.age,
                       "sound": selectedSettings.sound
                   },
-          "project": game.projectID }),
+          "project": gameDetails.projectID }),
     }
     console.log(payload)
 
     try {
-        const response = await fetch(game.fetchPath, payload );
+        const response = await fetch(gameDetails.fetchPath, payload );
         const data = await response.json();
         const cleanString = data.output.answer
             .replace(/```json\n/, '') // Remove opening backticks and JSON identifier
@@ -81,7 +98,7 @@ const SettingsPage = () => {
     }
   }, [wordChoices, wordsFetched, navigate, gameId, selectedSettings]);
 
-  const handleChange = (id, value) => {
+  const handleChange = (id:string, value:string) => {
     setSelectedSettings((prev) => ({ ...prev, [id]: value }));
   };
 
@@ -94,7 +111,7 @@ const SettingsPage = () => {
     <div className="flex h-screen items-center justify-center px-3">
       <div className="flex w-[850px] flex-col gap-6 rounded-lg bg-white px-10 py-14 shadow-xl max-md:px-6 max-md:py-10">
         <h1 className="text-3xl font-bold text-gray-800">Game Settings</h1>
-        <p className="text-gray-600">Configure your settings for {gameId.replace("-", " ")}.</p>
+        <p className="text-gray-600">Configure your settings for {gameId?.replace("-", " ")}.</p>
 
         <div className="flex flex-col gap-4">
           {settings.length > 0 ? (
@@ -118,7 +135,7 @@ const SettingsPage = () => {
           )}
         </div>
 
-        {game.fetchWords && (
+        {gameDetails.fetchWords && (
           <button 
                 onClick={fetchWordChoices} 
                 className="bg-blue-500 text-white px-4 py-2 mt-3 rounded"
@@ -128,7 +145,7 @@ const SettingsPage = () => {
         </button>
         )}
 
-        {!game.fetchWords && (
+        {!gameDetails.fetchWords && (
           <button
           onClick={handleStartGame}
           className="mt-4 w-full rounded-lg bg-blue-600 px-6 py-3 text-lg font-semibold text-white shadow-md transition hover:bg-blue-700"

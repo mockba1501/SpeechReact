@@ -1,4 +1,4 @@
-interface Game {
+interface GameDetails {
   id: string,
   name: string,
   description: string,
@@ -15,6 +15,7 @@ interface GameSetting {
 }
 
 type GameSettings = Record<string, GameSetting[]>;
+export type {GameDetails, GameSetting, GameSettings}
 
 const HANGMAN_URL:string = import.meta.env.VITE_HANGMAN_WORD_API;
 const HANGMAN_PROJECT_ID:string = import.meta.env.VITE_HANGMAN_PROJECT_ID;
@@ -23,7 +24,7 @@ if (!HANGMAN_URL || !HANGMAN_PROJECT_ID) {
   throw new Error("Missing required environment variables");
 }
 
-export const games: Game[] = [
+export const games: GameDetails[] = [
   { 
     id: "hangman", 
     name: "Voice Hangman", 
