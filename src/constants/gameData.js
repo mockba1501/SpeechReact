@@ -49,11 +49,19 @@ export const gameSettings = {
       { id: "hints", label: "Hints Allowed", options: ["Yes", "No"] }
     ],
     "hangman2": [ { id: "age", label: "Age", options: ["5 to 7 years old", "8 to 13 years old", "14 to 17 years old", "more than 18 years old"] },
-    { id: "sound", label: "Letter Sound", options: [ "/p/ – pat","/b/ – bat","/t/ – top","/d/ – dog","/k/ – cat","/g/ – go","/m/ – man","/n/ – net","/ŋ/ – sing","/f/ – fan","/v/ – van","/s/ – sun","/z/ – zoo","/ʃ/ – shoe","/ʧ/ – chair"] },
+    { id: "sound", label: "Letter Sound", options: [ "/p/ – pat","/b/ – bat","/t/ – top","/d/ – dog","/k/ – cat","/g/ – go","/m/ – man",
+      "/n/ – net","/ŋ/ – sing","/f/ – fan","/v/ – van","/s/ – sun","/z/ – zoo","/ʃ/ – shoe","/ʧ/ – chair",
+      "/iː/ - bee","/ɪ/ - bit","/e/ - bet","/j/ - yes  ","/w/ - water","/r/ - red","/l/ - love","/h/ - house","/ʤ/ - judge","/θ/ - think","/ð/ - this","/ʒ/ - measure","/æ/ - bat","/ʌ/ - but","/ə/ - about","/ɜː/ - bird","/ɒ/ - hot","/ɔː/ - saw",
+      "/ʊ/ - book","/uː/ - boot","/aɪ/ - my","/eɪ/ - day","/ɔɪ/ - boy","/aʊ/ - now","/əʊ/ - go","/ɪə/ - ear","/eə/ - air","/ʊə/ - sure"
+    ] },
     { id: "position", label: "Letter Position", options: ["Beginning","Middle","End"]}
     ],
     "hangman3": [ { id: "age", label: "Age", options: ["5 to 7 years old", "8 to 13 years old", "14 to 17 years old", "more than 18 years old"] },
-    { id: "sound", label: "Letter Sound", options: [ "/p/ – pat","/b/ – bat","/t/ – top","/d/ – dog","/k/ – cat","/g/ – go","/m/ – man","/n/ – net","/ŋ/ – sing","/f/ – fan","/v/ – van","/s/ – sun","/z/ – zoo","/ʃ/ – shoe","/ʧ/ – chair"] },
+    { id: "sound", label: "Letter Sound", options: [ "/p/ – pat","/b/ – bat","/t/ – top","/d/ – dog","/k/ – cat","/g/ – go","/m/ – man",
+      "/n/ – net","/ŋ/ – sing","/f/ – fan","/v/ – van","/s/ – sun","/z/ – zoo","/ʃ/ – shoe","/ʧ/ – chair",
+      "/iː/ - bee","/ɪ/ - bit","/e/ - bet","/j/ - yes  ","/w/ - water","/r/ - red","/l/ - love","/h/ - house","/ʤ/ - judge","/θ/ - think","/ð/ - this","/ʒ/ - measure","/æ/ - bat","/ʌ/ - but","/ə/ - about","/ɜː/ - bird","/ɒ/ - hot","/ɔː/ - saw",
+      "/ʊ/ - book","/uː/ - boot","/aɪ/ - my","/eɪ/ - day","/ɔɪ/ - boy","/aʊ/ - now","/əʊ/ - go","/ɪə/ - ear","/eə/ - air","/ʊə/ - sure"
+    ] },
     { id: "position", label: "Letter Position", options: ["Beginning","Middle","End"]},
     { id: "difficulty", label: "Select Level", options: ["Easy","Medium","Hard"]}
     ]
