@@ -2,7 +2,10 @@ import { useContext } from "react";
 
 import GameContext from "../../context/GameContext";
 
-const GameOverModal = ({isVersion2 = false}) => {
+interface GameOverModalProps {
+    isVersion2?:boolean;
+}
+const GameOverModal = ({isVersion2 = false}:GameOverModalProps) => {
     const {currentWord, 
             isGameWon,
             showModal,
@@ -17,7 +20,7 @@ const GameOverModal = ({isVersion2 = false}) => {
     console.log("All words completed: ", allWordsCompleted);
     
     // Helper function to handle button clicks and blur the button
-    const handleButtonClick = (handler) => (event) => {
+    const handleButtonClick = (handler: ()=>void) => (event:React.MouseEvent<HTMLButtonElement>) => {
         handler(); // Call the original handler
         event.currentTarget.blur(); // Blur the button to remove focus
     };
