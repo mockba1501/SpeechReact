@@ -4,28 +4,28 @@ import GameStatsManager from "./GameStatsManager";
 
 interface GameContextType {
     currentWord: string;
-    setCurrentWord: (word:string) => void;
+    setCurrentWord: React.Dispatch<React.SetStateAction<string>>;
     correctLetters: string[];
-    setCorrectLetters: (letters: string[]) => void;
+    setCorrectLetters: React.Dispatch<React.SetStateAction<string[]>>;
     incorrectLetters: string[];
-    setIncorrectLetters: (letters: string[]) => void;
+    setIncorrectLetters: React.Dispatch<React.SetStateAction<string[]>>;
     clickedKeys: string[];
-    setClickedKeys: (keys: string[]) => void;
+    setClickedKeys: React.Dispatch<React.SetStateAction<string[]>>;
     wrongGuesses: number;
-    setWrongGuesses: (count: number) => void;
+    setWrongGuesses: React.Dispatch<React.SetStateAction<number>>;
     isGameWon: boolean;
-    setIsGameWon: (state: boolean) => void;
+    setIsGameWon: React.Dispatch<React.SetStateAction<boolean>>;
     showModal: boolean;
-    setShowModal: (state: boolean) => void;
+    setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
     isGameReset: boolean;
-    setIsGameReset: (state: boolean) => void;
+    setIsGameReset: React.Dispatch<React.SetStateAction<boolean>>;
     resetGameBoard: () => void;
     isMicrophoneEnabled: boolean;
-    setIsMicrophoneEnabled: (state: boolean) => void;
+    setIsMicrophoneEnabled: React.Dispatch<React.SetStateAction<boolean>>;
     wordIndex: number;
-    setWordIndex: (index: number) => void;
+    setWordIndex: React.Dispatch<React.SetStateAction<number>>;
     allWordsCompleted: boolean;
-    setAllWordsCompleted: (state: boolean) => void;
+    setAllWordsCompleted: React.Dispatch<React.SetStateAction<boolean>>;
     handleNextWord: () => void;
     handleRestart: () => void;
     handleFeedback: () => void;
@@ -33,7 +33,7 @@ interface GameContextType {
     gameStatsManager: GameStatsManager;
 }
 //create a context for the game
-const GameContext = createContext<GameContextType| undefined>(undefined);
+const GameContext = createContext<GameContextType>({} as GameContextType);
 const gameStatsManager = new GameStatsManager();
 
 interface GameProviderProps {
@@ -135,7 +135,7 @@ export const GameProvider = ({ children }:GameProviderProps) => {
                 gameStatsManager
             }}>
             {children}
-            </GameContext.Provider>
+        </GameContext.Provider>
     );
     
 }
