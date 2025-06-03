@@ -13,7 +13,7 @@ const Hangman3 = () => {
     console.log("Selected Words:", words);
 
     useEffect(() => {
-      const handleBackNavigation = (event) => {
+      const handleBackNavigation = (event: PopStateEvent) => {
         resetGameBoard();
       }
 

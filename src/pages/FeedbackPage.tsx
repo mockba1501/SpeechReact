@@ -16,7 +16,7 @@ const FeedbackPage = () => {
     const navigate = useNavigate();
     
     useEffect(() => {
-        const handleBackNavigation = (event) => {
+        const handleBackNavigation = (event:PopStateEvent) => {
           resetGameBoard();
           handlePlayAgain();
         }
