@@ -1,16 +1,6 @@
 import axios from 'axios';
 import Cookie from 'universal-cookie';
 
-interface TokenResponse {
-    token: string;
-    region: string;
-}
-
-interface AuthResult {
-    authToken: string | null;
-    region: string | null;
-    error?: string;
-}
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 let tokenPromise:Promise<AuthResult> | null = null; // Cache the ongoing token request
