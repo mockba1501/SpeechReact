@@ -14,10 +14,6 @@ import IconButton from '@mui/material/IconButton';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Typography from '@mui/material/Typography';
 
-interface RecognitionMessage {
-    type: 'info' | 'success' | 'warning' | 'error';
-    text: string;
-}
 const GameBoard = () => {
     const {currentWord,
             setCurrentWord,

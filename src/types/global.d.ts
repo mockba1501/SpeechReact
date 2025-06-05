@@ -33,4 +33,9 @@ declare global {
         confidence: number;
         source: SourceType;
     }
+
+    interface RecognitionMessage {
+    type: 'info' | 'success' | 'warning' | 'error';
+    text: string;
+}
 }

@@ -54,7 +54,7 @@ const HangmanBoardV3 = ({settings, words}) => {
         setWordIndex(0);
         resetGameState();
         gameStatsManager.resetStats();
-        gameStatsManager.setSessionSettings(settings,"v3");
+        gameStatsManager.setSessionSettings(settings,"V3");
     },[])
     
     useEffect(() => {
