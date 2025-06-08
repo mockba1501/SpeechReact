@@ -62,8 +62,8 @@ const useMicrophone = () => {
         }
 
         // If microphone exists, check permission state
-        if (navigator.permissions?.query) {
-          const status = await navigator.permissions.query({ name: 'microphone' });
+        if (navigator.permissions?.query && 'microphone' in navigator.permissions) {
+          const status = await navigator.permissions.query({ name: 'microphone' as PermissionName});
           setMicStatus(prev => ({
             ...prev,
             available: true,
