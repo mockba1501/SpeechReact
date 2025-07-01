@@ -3,8 +3,7 @@ import { useNavigate } from "react-router-dom";
 import GameContext from "../context/GameContext";
 
 //Styling
-import Box from '@mui/material/Box';
-import { Button, Typography, List, ListItem, ListItemText } from "@mui/material";
+import { Box, Button, Typography, List, ListItem, ListItemText } from "@mui/material";
 
 const FeedbackPage = () => {
     const {
@@ -30,9 +29,11 @@ const FeedbackPage = () => {
     // Save to local storage or context
     useEffect(() => {
         const results = gameStatsManager.getAllResults();
+        console.log("FeedbackPage results:", results);
         setResults(results);
 
         const sessionSettings = gameStatsManager.getSessionSettings();
+        console.log("FeedbackPage sessionSettings:", sessionSettings);
         setSettings(sessionSettings);
     }, [gameStatsManager]);
 
@@ -80,10 +81,10 @@ const FeedbackPage = () => {
                                     ▶️
                                 </span>
                                 {wordData.word} - Accuracy: {wordData.accuracy}%
-                                {settings.gameVersion === "v2" && `, Precision: ${gameStatsManager.getPrecisionForWord(wordData.word)}%`}
+                                {settings.gameVersion === "V2" && `, Precision: ${gameStatsManager.getPrecisionForWord(wordData.word)}%`}
                             </summary>
                         
-                            {settings.gameVersion === "v3" ? (
+                            {settings.gameVersion === "V3" ? (
                                     // Version 1: Show all attempts
                                     <List sx={{ paddingLeft: 2, backgroundColor: "#f9f9f9", borderRadius: "8px", padding: "8px", marginTop: "4px" }}>
                                         {wordData.attempts.map((attempt, attemptIndex) => (

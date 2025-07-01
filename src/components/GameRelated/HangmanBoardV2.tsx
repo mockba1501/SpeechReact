@@ -4,11 +4,6 @@ import { useContext, useEffect, useRef, useState } from "react";
 import GameContext from "../../context/GameContext";
 import GameKeyboard from "./GameKeyboard";
 import useVoiceRecognition from "../../hooks/useVoiceRecognition";
-//New logic to be implemented
-//import ScoringPanel from "./ScoringPanel";
-//import DifficultyControls from "./DifficultyControls";
-//import HintDisplay from "./HintDisplay";
-//import GameFeedback from "./GameFeedback";
 
 //Styling
 import Switch from '@mui/material/Switch';
@@ -18,7 +13,7 @@ import IconButton from '@mui/material/IconButton';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Typography from '@mui/material/Typography';
 
-const HangmanBoardV2 = ({settings, words}) => {
+const HangmanBoardV2 = ({settings, words}:{ settings: GameSettingsMap; words: WordItem[] }) => {
     const {currentWord,
             setCurrentWord,
             correctLetters,

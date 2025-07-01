@@ -1,11 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 
-interface WordItem {
-    word: string;
-    hint: string;
-  }
-
 const WordSelection = () => {
     const navigate = useNavigate();
     const location = useLocation();
@@ -28,7 +23,7 @@ const WordSelection = () => {
     <div className="flex h-screen items-center justify-center px-3">
         <div className="flex w-[850px] flex-col gap-6 rounded-lg bg-white px-10 py-14 shadow-xl max-md:px-6 max-md:py-10">
             <h1 className="text-3xl font-bold text-gray-800">Select Words for the Game</h1>
-            <p className="text-gray-600">Choose words from the list below.</p>
+            <p className="text-gray-600">Choose at least one word or more from the list below.</p>
 
             <div className="grid sm:grid-cols-2 gap-2 grid-cols-1 max-h-[60vh] overflow-y-auto">
                 {words.map((item:WordItem) => (

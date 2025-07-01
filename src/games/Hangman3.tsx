@@ -8,7 +8,7 @@ import { useEffect, useContext } from "react";
 const Hangman3 = () => {
     const location = useLocation();
     
-    const { settings, words } = location.state || { settings: {}, words: [] };
+    const { settings, words } = location.state || { settings: {}, words: Array<WordItem> };
     const { resetGameBoard } = useContext(GameContext); // Call reset function from context
     console.log("Selected Words:", words);
 
