@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { games, gameSettings, GameDetails, GameSetting } from "../constants/gameData";
+import { games, gameSettings } from "../constants/gameData";
 
 const SettingsPage = () => {
   const { gameId } = useParams<{gameId: string}>();
@@ -34,7 +34,7 @@ const SettingsPage = () => {
       [setting.id] : setting.options[0]
     }), {} as SelectedSettings)
   );
-  const [wordChoices, setWordChoices] = useState<string[]>([]);   // Store words to be used in the game
+  const [wordChoices, setWordChoices] = useState<WordItem[]>([]);   // Store words to be used in the game
   const [loading, setLoading] = useState(false);        // Loading state
   const [wordsFetched, setWordsFetched] = useState(false); // Ensure that words fetched successfully
   
@@ -47,50 +47,68 @@ const SettingsPage = () => {
     
     const payload = {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json",
+          'X-API-Key': gameDetails.projectID
+         },
         body: JSON.stringify({ 
-          "params": 
-                  {
-                      "position": selectedSettings.position,
-                      "age": selectedSettings.age,
-                      "sound": selectedSettings.sound
-                  },
-          "project": gameDetails.projectID }),
-    }
+              language: "en-US", // By default English for the time being
+              age: selectedSettings.age,
+              selectedSound: {
+                symbol: selectedSettings.sound,
+                position: selectedSettings.position,
+              }
+        }),
+    };
     console.log(payload)
 
     try {
         const response = await fetch(gameDetails.fetchPath, payload );
-        const data = await response.json();
-        const cleanString = data.output.answer
-            .replace(/```json\n/, '') // Remove opening backticks and JSON identifier
-            .replace(/```/g, '') // Remove closing backticks
-            .replace(/\n/g, ''); // Remove newlines
-
-        //Parse the internal JSON string
-        try {
-            const result = JSON.parse(cleanString);
-            setWordChoices(result); // Store received words
+        const result = await response.json();
+        if (response.ok) 
+        {
+          const parsedResponse = JSON.parse(result.response);
+          console.log("Parsed Response:", parsedResponse);
+          const wordArray = parseWordsAndHints(parsedResponse);
+          if (wordArray) {
+            //const wordArray = parsedResponse.words.split('; ');
+            console.log("Word Array" , wordArray)
+            setWordChoices(wordArray);
             setWordsFetched(true);
-            console.log(result);
-            } catch (error) {
-            console.error("Error parsing JSON:", error);
-        }
+          }
         
-    } catch (error) {
+          console.log(`\n💳 Remaining credits: ${result.remaining_credits}`);
+          
+        } else {
+          console.log('Error:', result.error);
+          if (result.details) {
+            console.log('Details:', result.details);
+          }
+          if (result.remaining_credits !== undefined) {
+            console.log(`Remaining credits: ${result.remaining_credits}`);
+          }
+        }
+      } catch (error) {
         console.error("Error fetching words:", error);
     }
-    setLoading(false);
-    
-    /*
-    // Temporary solution to fetch words
-    const data = wordListCustom;
-    console.log(data);
-    setWordChoices(data);
-    setWordsFetched(true);
-    */
+
+    setLoading(false);    
   };
 
+    const parseWordsAndHints = (data: { words: string; hints: string }): WordItem[] => {
+    const wordList = data.words.split(";").map(w => w.trim()).filter(Boolean);
+    const hintList = data.hints.split(";").map(h => h.trim()).filter(Boolean);
+
+    const result: WordItem[] = [];
+
+    for (let i = 0; i < Math.min(wordList.length, hintList.length); i++) {
+      result.push({
+        word: wordList[i],
+        hint: hintList[i]
+      });
+    }
+
+    return result;
+  }
   useEffect(() => {
     if (wordsFetched && wordChoices.length > 0) {
       console.log("Proceeding to Word Selection Page...");
@@ -141,7 +159,7 @@ const SettingsPage = () => {
                 className="bg-blue-500 text-white px-4 py-2 mt-3 rounded"
                 disabled={loading}
             >
-                {loading ? "Loading..." : "Fetch Words"}
+                {loading ? "Loading..." : "Generate Words"}
         </button>
         )}
 

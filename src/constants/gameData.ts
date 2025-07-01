@@ -1,26 +1,13 @@
-interface GameDetails {
-  id: string,
-  name: string,
-  description: string,
-  requiresSettings: boolean,
-  fetchWords: boolean,
-  fetchPath: string,
-  projectID: string
-}
 
-interface GameSetting {
-  id: string,
-  label: string,
-  options: string[]
-}
+//export type {GameDetails, GameSetting, GameSettings}
 
-type GameSettings = Record<string, GameSetting[]>;
-export type {GameDetails, GameSetting, GameSettings}
+//const HANGMAN_URL:string = import.meta.env.VITE_HANGMAN_WORD_API;
+//const HANGMAN_PROJECT_ID:string = import.meta.env.VITE_HANGMAN_PROJECT_ID;
 
-const HANGMAN_URL:string = import.meta.env.VITE_HANGMAN_WORD_API;
-const HANGMAN_PROJECT_ID:string = import.meta.env.VITE_HANGMAN_PROJECT_ID;
+const VOCAMETRIX_URL:string = import.meta.env.VITE_VOCAMETRIX_PLATFORM;
+const VOCAMETRIX_URL_API:string = import.meta.env.VITE_VOCAMETRIX_API_KEY;
 
-if (!HANGMAN_URL || !HANGMAN_PROJECT_ID) {
+if (!VOCAMETRIX_URL || !VOCAMETRIX_URL_API) {
   throw new Error("Missing required environment variables");
 }
 
@@ -40,8 +27,8 @@ export const games: GameDetails[] = [
     description: "2nd Iteration with AI word generator.\nLetter by Letter Guessing",
     requiresSettings: true,
     fetchWords: true,
-    fetchPath: HANGMAN_URL, 
-    projectID: HANGMAN_PROJECT_ID
+    fetchPath: VOCAMETRIX_URL, 
+    projectID: VOCAMETRIX_URL_API
   },
   { 
     id: "hangman3", 
@@ -49,8 +36,8 @@ export const games: GameDetails[] = [
     description: "3rd Iteration with custom difficulty.\nFull pronounciation Varient",
     requiresSettings: true,
     fetchWords: true,
-    fetchPath: HANGMAN_URL, 
-    projectID: HANGMAN_PROJECT_ID
+    fetchPath: VOCAMETRIX_URL, 
+    projectID: VOCAMETRIX_URL_API
   },
   /*
   { 
