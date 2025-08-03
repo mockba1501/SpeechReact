@@ -1,28 +1,28 @@
-# 🎮 Hangman Game Suite
+# 🎮 Voice-Powered Hangman Game
 
-An educational and accessible **voice-powered Hangman game**, designed with flexibility, multiple game modes, and child-friendly themes.
+An educational and accessible **voice-powered Hangman game** with full-word pronunciation, designed for flexibility and child-friendly learning.
 
 ---
 
 ## 🚀 Features
 
-- 🎤 **Speech Recognition**: Supports voice input via full-word or per-letter recognition modes.
-- 🎹 **Keyboard Input**: Optional manual input with interactive virtual keyboard.
-- 🧠 **Hint System**: Adaptive hint display based on difficulty settings (Easy, Medium, Hard).
-- 📊 **Feedback Page**: Post-game insights showing accuracy, mistakes, and learning stats.
-- 👶 **Age-Appropriate Settings**: Targeted word lists and sounds per age group.
-- 🧪 **Game Modes**:
-  - **Hangman V2**: Letter-by-letter guessing with categorized feedback.
-  - **Hangman V3**: Full-word guessing with precision scoring and advanced feedback.
+- 🎤 **Speech Recognition**: Full-word voice input via Azure Cognitive Services
+- 🎹 **Keyboard Input**: Optional manual input with interactive virtual keyboard
+- 🧠 **Hint System**: Adaptive hint display based on difficulty settings (Easy, Medium, Hard)
+- 📊 **Feedback Page**: Post-game insights showing accuracy, mistakes, and learning stats
+- 👶 **Age-Appropriate Settings**: Targeted word lists and sounds per age group
+- 🎯 **Full-Word Guessing**: Advanced pronunciation-based gameplay with precision scoring
 
 ---
 
-## 🧩 Game Modes
+## 🧩 Game Features
 
-| Version | Input Method      | Hint System    | Feedback Style              | Best For            |
-|---------|-------------------|----------------|-----------------------------|---------------------|
-| V2      | Letter-by-letter  | Basic text     | Shows correct/incorrect     | Younger learners    |
-| V3      | Full-word         | Timed + audio + picture | Accuracy + precision per attempt | Older learners & advanced users |
+| Feature | Description |
+|---------|-------------|
+| Input Method | Full-word pronunciation |
+| Hint System | Timed + audio + picture hints |
+| Feedback Style | Accuracy + precision per attempt |
+| Best For | All ages with pronunciation focus |
 
 ---
 
@@ -38,21 +38,20 @@ An educational and accessible **voice-powered Hangman game**, designed with flex
 ---
 
 ## 📁 Project Structure
+```
 src/
 │
 ├── components/
-│ ├── GameBoard.tsx # Original version of the game
-│ ├── HangmanBoardV2.tsx # Letter-based game
-│ ├── HangmanBoardV3.tsx # Full-word game with scoring
-│ ├── GameKeyboard.tsx # On-screen keyboard
-│ ├── GameOverModal.tsx # Contextual hint system
-│ ├── HangmanIllustration.tsx # Contextual hint system
-│ └── HintDisplay.tsx # Contextual hint system
-|
-├── Layout/
-│ ├── BackButton.tsx 
-│ ├── Layout.tsx 
-│ └── NavBar.tsx
+│ ├── GameRelated/
+│ │ ├── HangmanBoard.tsx      # Main game board component
+│ │ ├── GameKeyboard.tsx      # On-screen keyboard
+│ │ ├── GameOverModal.tsx     # Game over modal
+│ │ ├── HangmanIllustration.tsx # Hangman drawing
+│ │ └── HintDisplay.tsx       # Hint system
+│ └── Layout/
+│   ├── BackButton.tsx 
+│   ├── Layout.tsx 
+│   └── NavBar.tsx
 │
 ├── constants/
 │ ├── gameData.ts
@@ -63,24 +62,22 @@ src/
 │ └── GameStatsManager.tsx
 │
 ├── games/
-│ ├── Hangman2.tsx
-│ ├── Hangman3.tsx
-│ └── HangmanGame.tsx
+│ └── HangmanGame.tsx         # Main game component
 │
 ├── hooks/
 │ ├── useMicrophone.ts 
 │ ├── usePronounce.ts
-│ ├── useVoiceRecognition.ts # Letter recognition hook (V2)
-│ └── useFullWordRecognition.ts# Word recognition hook (V3)
-|
+│ └── useFullWordRecognition.ts # Full-word recognition hook
+│
 ├── pages/
-│ ├── FeedbackPage.tsx      # Post-game feedback UI
-│ ├── MainMenu.tsx          # Main Menu Game selection
-│ ├── SettingsPage.tsx      # Settings Selection
-│ └── WordSelectionPage.tsx # Handles Words Selection
-|
+│ ├── FeedbackPage.tsx        # Post-game feedback UI
+│ ├── MainMenu.tsx            # Main Menu Game selection
+│ ├── SettingsPage.tsx        # Settings Selection
+│ └── WordSelectionPage.tsx   # Word Selection
+│
 └── assets/
-└───── images/ # Hint images (optional)
+    └── images/               # Game images and illustrations
+```
 
 
 

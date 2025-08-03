@@ -15,7 +15,7 @@ import IconButton from '@mui/material/IconButton';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Typography from '@mui/material/Typography';
 
-const HangmanBoardV3 = ({settings, words}:{ settings: GameSettingsMap; words: WordItem[] }) => {
+const HangmanBoard = ({settings, words}:{ settings: GameSettingsMap; words: WordItem[] }) => {
     const {currentWord,
             setCurrentWord,
             clickedKeys,
@@ -50,7 +50,7 @@ const HangmanBoardV3 = ({settings, words}:{ settings: GameSettingsMap; words: Wo
         setWordIndex(0);
         resetGameState();
         gameStatsManager.resetStats();
-        gameStatsManager.setSessionSettings(settings,"V3");
+        gameStatsManager.setSessionSettings(settings);
     },[])
     
     useEffect(() => {
@@ -315,4 +315,4 @@ const HangmanBoardV3 = ({settings, words}:{ settings: GameSettingsMap; words: Wo
     );
 }
 
-export default HangmanBoardV3;
+export default HangmanBoard;

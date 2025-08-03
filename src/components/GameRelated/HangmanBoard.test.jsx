@@ -1,8 +1,8 @@
-// HangmanBoardV3.test.tsx
+// HangmanBoard.test.tsx
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 import { MemoryRouter } from 'react-router-dom'; // Import MemoryRouter
-import HangmanBoardV3 from './HangmanBoardV3';
+import HangmanBoard from './HangmanBoard';
 import { GameProvider } from '../../context/GameContext';
 import GameContext from '../../context/GameContext';
 
@@ -32,12 +32,12 @@ const mockGameStatsManager = {
     gameStatsManager: mockGameStatsManager,
   };
   
-describe("HangmanBoardV3", () => {
+describe("HangmanBoard", () => {
     it("initializes with the correct game settings", async () => {
       render(
         <MemoryRouter>
         <GameProvider value={mockContext}>
-          <HangmanBoardV3 settings={{ difficulty: "medium" }} words={[{ word: "apple", hint: "A fruit" }]} />
+          <HangmanBoard settings={{ difficulty: "medium" }} words={[{ word: "apple", hint: "A fruit" }]} />
         </GameProvider>
         </MemoryRouter>
       );
@@ -58,7 +58,7 @@ describe("HangmanBoardV3", () => {
       render(
         <MemoryRouter>
         <GameProvider value={updatedContext}>
-          <HangmanBoardV3 settings={{ difficulty: "medium" }} words={[{ word: "banana", hint: "A fruit" }]} />
+          <HangmanBoard settings={{ difficulty: "medium" }} words={[{ word: "banana", hint: "A fruit" }]} />
         </GameProvider>
         </MemoryRouter>
       );
@@ -71,7 +71,7 @@ describe("HangmanBoardV3", () => {
     it("toggles microphone mode", () => {
       render(
         <GameContext.Provider value={mockContext}>
-          <HangmanBoardV3 settings={{}} words={[]} />
+          <HangmanBoard settings={{}} words={[]} />
         </GameContext.Provider>
       );
   
@@ -85,7 +85,7 @@ describe("HangmanBoardV3", () => {
       mockContext.wrongGuesses = 3;
       render(
         <GameContext.Provider value={mockContext}>
-          <HangmanBoardV3 settings={{}} words={[]} />
+          <HangmanBoard settings={{}} words={[]} />
         </GameContext.Provider>
       );
   
@@ -103,7 +103,7 @@ describe("HangmanBoardV3", () => {
   
       render(
         <GameContext.Provider value={updatedContext}>
-          <HangmanBoardV3 settings={{}} words={[]} />
+          <HangmanBoard settings={{}} words={[]} />
         </GameContext.Provider>
       );
   

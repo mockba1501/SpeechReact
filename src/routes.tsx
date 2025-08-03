@@ -7,8 +7,6 @@ import WordSelectionPage from "./pages/WordSelectionPage";
 import FeedbackPage from "./pages/FeedbackPage";
 
 import HangmanGame from "./games/HangmanGame";
-import Hangman2 from "./games/Hangman2";
-import Hangman3 from "./games/Hangman3";
 
 import Layout from "./components/Layout/Layout";
 
@@ -23,8 +21,6 @@ const AppRoutes = () => (
           <Route index element={<MainMenu />} />
           <Route path="/settings/:gameId" element={<SettingsPage />} />
           <Route path="/game/hangman" element={<HangmanGame />} />
-          <Route path="/game/hangman2" element={<Hangman2 />} />
-          <Route path="/game/hangman3" element={<Hangman3 />} />
           <Route path="/word-selection/:gameId" element={<WordSelectionPage />} />
           <Route path="/feedback" element={<FeedbackPage />} />
         </Route>
