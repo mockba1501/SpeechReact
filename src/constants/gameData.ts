@@ -11,9 +11,6 @@ if (!VOCAMETRIX_URL || !VOCAMETRIX_URL_API) {
   throw new Error("Missing required environment variables");
 }
 
-console.log("VOCAMETRIX_URL:", VOCAMETRIX_URL);
-console.log("VOCAMETRIX_URL_API:", VOCAMETRIX_URL_API);
-
 export const games: GameDetails[] = [
   { 
     id: "hangman", 
