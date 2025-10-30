@@ -48,8 +48,8 @@ jobs:
         env:
           VITE_BASE_URL: ${{secrets.VITE_BASE_URL}}
           VITE_APP_SPEECH_ENDPOINT: ${{secrets.VITE_APP_SPEECH_ENDPOINT}}
-          VITE_HANGMAN_PROJECT_ID: ${{secrets.VITE_HANGMAN_PROJECT_ID}}
-          VITE_HANGMAN_WORD_API: ${{secrets.VITE_HANGMAN_WORD_API}}
+          VITE_VOCAMETRIX_PLATFORM: ${{ secrets.VITE_VOCAMETRIX_PLATFORM }}
+          VITE_VOCAMETRIX_API_KEY: ${{ secrets.VITE_VOCAMETRIX_API_KEY }}
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
     runs-on: ubuntu-latest
