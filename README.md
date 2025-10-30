@@ -1,181 +1,177 @@
-# React Speech service sample app
+# 🎮 Speech Therapy Games — Voice‑Powered Hangman Suite
 
-This sample shows how to integrate the Azure Speech service into a sample React application. This sample shows design pattern examples for authentication token exchange and management, as well as capturing audio from a microphone or file for speech-to-text conversions.
+An educational, accessible Hangman game suite powered by speech recognition. Players can guess letters or full words using their voice (or an on‑screen keyboard), with adaptive hints, difficulty levels, and post‑game feedback.
 
-## Prerequisites
+---
 
-1. This article assumes that you have an Azure account and Speech service subscription. If you don't have an account and subscription, [try the Speech service for free](https://docs.microsoft.com/azure/cognitive-services/speech-service/overview#try-the-speech-service-for-free).
-1. Ensure you have [Node.js](https://nodejs.org/en/download/) installed.
+## 🚀 Features
 
-## How to run the app
+- **Voice input (letters & words)**: Combines Microsoft Azure Cognitive Services Speech SDK with the Web Speech API for robust recognition.
+- **On‑screen keyboard**: Optional manual input with clear visual feedback.
+- **Multiple game modes**:
+  - Hangman 2: Letter‑by‑letter guessing with instant feedback.
+  - Hangman 3: Full‑word recognition with precision scoring.
+- **Adaptive hints**: Images and text hints varying by difficulty.
+- **Progress & feedback**: Post‑game feedback screen for quick insights.
+- **Kid‑friendly settings**: Age groups, sound options, and word position settings.
 
-1. Clone this repo, then change directory to the project root and run `npm install` to install dependencies.
-1. Add your Azure Speech key and region to the `.env` file, replacing the placeholder text.
-1. To run the Express server and React app together, run `npm run dev`.
+---
 
-## Change recognition language
+## 🛠 Tech Stack
 
-To change the source recognition language, change the locale strings in `App.js` lines **32** and **66**, which sets the recognition language property on the `SpeechConfig` object.
+- React 18 + TypeScript
+- Vite 6 (dev/build/preview)
+- Azure Cognitive Services Speech SDK (`microsoft-cognitiveservices-speech-sdk`)
+- Web Speech API fallback
+- React Router 7
+- Tailwind CSS
+- Testing: Vitest + @testing-library/react
+- Linting: ESLint
 
-```javascript
-speechConfig.speechRecognitionLanguage = 'en-US'
+---
+
+## ▶️ Quick Start
+
+1) Prerequisites
+- Node.js 18+ and npm
+- An HTTPS‑capable browser (Chrome/Edge recommended) with microphone access
+- Azure Speech resource (key + region) and a token service endpoint (see Environment)
+
+2) Install
+```bash
+npm install
 ```
 
-For a full list of supported locales, see the [language support article](https://docs.microsoft.com/azure/cognitive-services/speech-service/language-support#speech-to-text).
+3) Configure environment
+Create a `.env` file in the project root:
+```bash
+# Base URL for your token service (must expose /api/get-speech-token)
+VITE_BASE_URL=https://your-backend.example.com
 
-## Speech-to-text from microphone
-
-To convert speech-to-text using a microphone, run the app and then click **Convert speech to text from your mic.**. This will prompt you for access to your microphone, and then listen for you to speak. The following function `sttFromMic` in `App.js` contains the implementation.
-
-```javascript
-async sttFromMic() {
-    const tokenObj = await getTokenOrRefresh();
-    const speechConfig = speechsdk.SpeechConfig.fromAuthorizationToken(tokenObj.authToken, tokenObj.region);
-    speechConfig.speechRecognitionLanguage = 'en-US';
-    
-    const audioConfig = speechsdk.AudioConfig.fromDefaultMicrophoneInput();
-    const recognizer = new speechsdk.SpeechRecognizer(speechConfig, audioConfig);
-
-    this.setState({
-        displayText: 'speak into your microphone...'
-    });
-
-    recognizer.recognizeOnceAsync(result => {
-        let displayText;
-        if (result.reason === ResultReason.RecognizedSpeech) {
-            displayText = `RECOGNIZED: Text=${result.text}`
-        } else {
-            displayText = 'ERROR: Speech was cancelled or could not be recognized. Ensure your microphone is working properly.';
-        }
-
-        this.setState({
-            displayText: displayText
-        });
-    });
-}
+# Optional: Custom Speech model endpoint ID
+VITE_APP_SPEECH_ENDPOINT=your-custom-endpoint-id
 ```
 
-Running speech-to-text from a microphone is done by creating an `AudioConfig` object and using it with the recognizer.
-
-```javascript
-const audioConfig = speechsdk.AudioConfig.fromDefaultMicrophoneInput();
-const recognizer = new speechsdk.SpeechRecognizer(speechConfig, audioConfig);
+4) Run
+```bash
+npm run start
+# Vite dev server starts; open the printed local URL
 ```
 
-## Speech-to-text from file
-
-To convert speech-to-text from an audio file, run the app and then click **Convert speech to text from an audio file.**. This will open a file browser and allow you to select an audio file. The following function `fileChange` is bound to an event handler that detects the file change. 
-
-```javascript
-async fileChange(event) {
-    const audioFile = event.target.files[0];
-    console.log(audioFile);
-    const fileInfo = audioFile.name + ` size=${audioFile.size} bytes `;
-
-    this.setState({
-        displayText: fileInfo
-    });
-
-    const tokenObj = await getTokenOrRefresh();
-    const speechConfig = speechsdk.SpeechConfig.fromAuthorizationToken(tokenObj.authToken, tokenObj.region);
-    speechConfig.speechRecognitionLanguage = 'en-US';
-
-    const audioConfig = speechsdk.AudioConfig.fromWavFileInput(audioFile);
-    const recognizer = new speechsdk.SpeechRecognizer(speechConfig, audioConfig);
-
-    recognizer.recognizeOnceAsync(result => {
-        let displayText;
-        if (result.reason === ResultReason.RecognizedSpeech) {
-            displayText = `RECOGNIZED: Text=${result.text}`
-        } else {
-            displayText = 'ERROR: Speech was cancelled or could not be recognized. Ensure your microphone is working properly.';
-        }
-
-        this.setState({
-            displayText: fileInfo + displayText
-        });
-    });
-}
+5) Build & preview
+```bash
+npm run build
+npm run preview
 ```
 
-You need the audio file as a JavaScript [`File`](https://developer.mozilla.org/en-US/docs/Web/API/File) object, so you can grab it directly off the event target using `const audioFile = event.target.files[0];`. Next, you use the file to create the `AudioConfig` and then pass it to the recognizer.
-
-```javascript
-const audioConfig = speechsdk.AudioConfig.fromWavFileInput(audioFile);
-const recognizer = new speechsdk.SpeechRecognizer(speechConfig, audioConfig);
+6) Tests & lint
+```bash
+npm test
+npm run lint
 ```
 
-## Token exchange process
+---
 
-This sample application shows an example design pattern for retrieving and managing tokens, a common task when using the Speech JavaScript SDK in a browser environment. A simple Express back-end is implemented in the same project under `server/index.js`, which abstracts the token retrieval process. 
+## 🌐 Environment & Token Service
 
-The reason for this design is to prevent your speech key from being exposed on the front-end, since it can be used to make calls directly to your subscription. By using an ephemeral token, you are able to protect your speech key from being used directly. To get a token, you use the Speech REST API and make a call using your speech key and region. In the Express part of the app, this is implemented in `index.js` behind the endpoint `/api/get-speech-token`, which the front-end uses to get tokens. 
+The app does not store Azure keys in the client. Instead, it requests a short‑lived token from a backend endpoint and caches it in a cookie.
 
-```javascript
-app.get('/api/get-speech-token', async (req, res, next) => {
-    res.setHeader('Content-Type', 'application/json');
-    const speechKey = process.env.SPEECH_KEY;
-    const speechRegion = process.env.SPEECH_REGION;
+- Variable `VITE_BASE_URL` must point to a backend that exposes `GET /api/get-speech-token` and returns:
+  ```json
+  { "token": "<azure-speech-token>", "region": "<azure-region>" }
+  ```
+- Optional `VITE_APP_SPEECH_ENDPOINT` sets a Custom Speech endpoint ID for improved accuracy.
+- Token retrieval logic lives in `src/token_util.ts` and is used by the hooks and main menu prefetch.
 
-    if (speechKey === 'paste-your-speech-key-here' || speechRegion === 'paste-your-speech-region-here') {
-        res.status(400).send('You forgot to add your speech key or region to the .env file.');
-    } else {
-        const headers = { 
-            headers: {
-                'Ocp-Apim-Subscription-Key': speechKey,
-                'Content-Type': 'application/x-www-form-urlencoded'
-            }
-        };
+---
 
-        try {
-            const tokenResponse = await axios.post(`https://${speechRegion}.api.cognitive.microsoft.com/sts/v1.0/issueToken`, null, headers);
-            res.send({ token: tokenResponse.data, region: speechRegion });
-        } catch (err) {
-            res.status(401).send('There was an error authorizing your speech key.');
-        }
-    }
-});
+## 🧭 App Navigation
+
+Routes are defined in `src/routes.tsx` and wrapped with `GameProvider`:
+
+- `/` → Main menu
+- `/settings/:gameId` → Game settings per mode
+- `/word-selection/:gameId` → Word list selection (if applicable)
+- `/game/hangman`, `/game/hangman2`, `/game/hangman3` → Game screens
+- `/feedback` → Post‑game feedback page
+
+The primary entry mounts `AppRoutes` in `src/main.tsx`.
+
+---
+
+## 🧩 Architecture Overview
+
+- `context/GameContext.tsx` — Central game state: current word, guesses, modal state, microphone enablement, navigation helpers, and a `GameStatsManager` instance.
+- `hooks/useVoiceRecognition.ts` — Per‑letter recognition. Merges results from Azure Speech SDK and Web Speech API, normalizes many letter pronunciations (e.g., "why" → "y").
+- `hooks/useFullWordRecognition.ts` — Single‑utterance, full‑word recognition via Azure Speech SDK.
+- `hooks/useMicrophone.ts` — Microphone availability and permission prompts used on the main menu and in games.
+- `components/GameRelated/*` — Game boards, keyboard UI, modals, illustrations, and hint display.
+- `pages/*` — Menu, settings, word selection, and feedback screens.
+
+---
+
+## 🎮 Game Modes
+
+| Mode | Input | Hints | Best For |
+|------|-------|-------|----------|
+| Hangman 2 | Letter‑by‑letter (voice/keyboard) | Text + visuals | Younger learners / phonics |
+| Hangman 3 | Full‑word (voice) | Timed + visuals | Older learners / advanced |
+
+---
+
+## 🔐 Browser & Permissions
+
+- Mic permission is required for voice features. The main menu shows microphone and Azure token service status indicators.
+- Voice recognition works best over HTTPS contexts.
+- Chrome or Edge on desktop recommended; Safari may require additional permission flows.
+
+---
+
+## 📦 Scripts
+
+- `npm run start` — Start Vite dev server
+- `npm run build` — Production build to `dist/`
+- `npm run preview` — Preview the production build
+- `npm test` — Run unit tests with a UI
+- `npm run lint` — Run ESLint across the project
+
+---
+
+## 📁 Notable Files
+
+- `src/main.tsx` — App bootstrap
+- `src/routes.tsx` — Routing and `GameProvider`
+- `src/context/GameContext.tsx` — Shared game state
+- `src/hooks/useVoiceRecognition.ts` — Letter recognition (Azure + Web Speech)
+- `src/hooks/useFullWordRecognition.ts` — Full‑word recognition (Azure)
+- `src/token_util.ts` — Token retrieval from backend
+
+---
+
+## 🧪 Testing
+
+Vitest is configured with JSDOM and a global setup file:
+
+- Config: `vite.config.js` → `test` section
+- Setup: `vitest.setup.js`
+- Example test: `src/components/GameRelated/HangmanBoardV3.test.jsx`
+
+Run tests:
+```bash
+npm test
 ```
 
-In the request, you create a `Ocp-Apim-Subscription-Key` header, and pass your speech key as the value. Then you make a request to the **issueToken** endpoint for your region, and an authorization token is returned. In a production application, this endpoint returning the token should be *restricted by additional user authentication* whenever possible. 
+---
 
-On the front-end, `token_util.js` contains the helper function `getTokenOrRefresh` that is used to manage the refresh and retrieval process. 
+## ⚠️ Troubleshooting
 
-```javascript
-export async function getTokenOrRefresh() {
-    const cookie = new Cookie();
-    const speechToken = cookie.get('speech-token');
+- No mic detected: Ensure a physical microphone is available and selected by the OS.
+- Permission denied: Click the mic status button in the main menu or allow mic permissions in the browser.
+- Azure token offline: Verify `VITE_BASE_URL` and that your backend returns `{ token, region }`.
+- Low accuracy for letters: Provide `VITE_APP_SPEECH_ENDPOINT` if you have a Custom Speech model; otherwise default improves via phrase hints.
 
-    if (speechToken === undefined) {
-        try {
-            const res = await axios.get('/api/get-speech-token');
-            const token = res.data.token;
-            const region = res.data.region;
-            cookie.set('speech-token', region + ':' + token, {maxAge: 540, path: '/'});
+---
 
-            console.log('Token fetched from back-end: ' + token);
-            return { authToken: token, region: region };
-        } catch (err) {
-            console.log(err.response.data);
-            return { authToken: null, error: err.response.data };
-        }
-    } else {
-        console.log('Token fetched from cookie: ' + speechToken);
-        const idx = speechToken.indexOf(':');
-        return { authToken: speechToken.slice(idx + 1), region: speechToken.slice(0, idx) };
-    }
-}
-```
+## 📜 License
 
-This function uses the `universal-cookie` library to store and retrieve the token from local storage. It first checks to see if there is an existing cookie, and in that case it returns the token without hitting the Express back-end. If there is no existing cookie for a token, it makes the call to `/api/get-speech-token` to fetch a new one. Since we need both the token and its corresponding region later, the cookie is stored in the format `token:region` and upon retrieval is spliced into each value.
-
-Tokens for the service expire after 10 minutes, so the sample uses the `maxAge` property of the cookie to act as a trigger for when a new token needs to be generated. It is reccommended to use 9 minutes as the expiry time to act as a buffer, so we set `maxAge` to **540 seconds**.
-
-In `App.js` you use `getTokenOrRefresh` in the functions for speech-to-text from a microphone, and from a file. Finally, use the `SpeechConfig.fromAuthorizationToken` function to create an auth context using the token.
-
-```javascript
-const tokenObj = await getTokenOrRefresh();
-const speechConfig = speechsdk.SpeechConfig.fromAuthorizationToken(tokenObj.authToken, tokenObj.region);
-```
-
-In many other Speech service samples, you will see the function `SpeechConfig.fromSubscription` used instead of `SpeechConfig.fromAuthorizationToken`, but by **avoiding the usage** of `fromSubscription` on the front-end, you prevent your speech subscription key from becoming exposed, and instead utilize the token authentication process. `fromSubscription` is safe to use in a Node.js environment, or in other Speech SDK programming languages when the call is made on a back-end, but it is best to avoid using in a browser-based JavaScript environment.
+MIT License — see `LICENSE.md`.

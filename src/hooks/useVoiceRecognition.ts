@@ -4,9 +4,22 @@ import { useState, useRef } from 'react';
 import { getTokenOrRefresh } from "../token_util";
 import { ResultReason } from 'microsoft-cognitiveservices-speech-sdk';
 import * as speechsdk from 'microsoft-cognitiveservices-speech-sdk';
+import useMicrophone from './useMicrophone';
 
+type SourceType = 'microsoft' | 'web-speech';
+
+type RecognitionResult = {
+    text: string;
+    confidence: number;
+    source: SourceType;
+    error?: string;
+}
+
+type SpecialCases = {
+    [key: string]:string;
+}
 // Special cases sorted alphabetically
-const specialCases = {
+const specialCases:SpecialCases = {
     "aih": "a",
     "ah": "a",
     "bee": "b",
@@ -59,7 +72,7 @@ const specialCases = {
     "zed": "z",
 };
 
-const getRecognizedLetter = (text) => {
+const getRecognizedLetter = (text:string) => {
     console.log("Cleaning ", text); 
     // Convert to lowercase and remove non-alphabetic characters
     let cleanedText = text.toLowerCase().replace(/[^a-z\s]/g, '').trim();
@@ -81,34 +94,12 @@ const getRecognizedLetter = (text) => {
     return firstLetter || null; // Return null if no valid letter is found
 };
 
-const checkMicrophonePermission = async () => {
-    try {
-        // Check microphone permissions
-        const micPermission = await navigator.mediaDevices.getUserMedia({ audio: true })
-        .then(() => true)
-        .catch(() => false);
-
-        if (!micPermission) {
-            console.error("Microphone access denied or unavailable.");
-            setError("Microphone access denied. Please allow access in browser settings.");
-            setIsListening(false);
-            return;
-        }
-
-    } catch(error)
-    {
-        setIsListening(false);
-        setError(error.message);
-    }
-    return true;
-}
-
 const getMicrosoftRecognizer = async () => {
     try {    
         // Check if the recognizer is already initialized
-        const tokenObj = await getTokenOrRefresh();
+        const tokenObj: AuthResult = await getTokenOrRefresh();
         console.log(tokenObj);
-        if (!tokenObj.authToken) {
+        if (!tokenObj.authToken || !tokenObj.region) {
             alert("Voice features are still initializing. Please try again in a moment.");
             console.error("Authorization token is null or undefined");
             throw new Error("Authorization token is null or undefined");
@@ -119,7 +110,7 @@ const getMicrosoftRecognizer = async () => {
         speechConfig.speechRecognitionLanguage = 'en-US';
         
         // Use the custom model endpoint
-        const speechEndPoint = import.meta.env.VITE_APP_SPEECH_ENDPOINT;
+        const speechEndPoint:string = import.meta.env.VITE_APP_SPEECH_ENDPOINT;
         speechConfig.endpointId = speechEndPoint;
         
         const audioConfig = speechsdk.AudioConfig.fromDefaultMicrophoneInput();
@@ -140,10 +131,11 @@ const getMicrosoftRecognizer = async () => {
 }
 
 const useVoiceRecognition = () => {
-    const [recognizedText, setRecognizedText] = useState('');
-    const [isListening, setIsListening] = useState(false);
-    const [error, setError] = useState(null);
-    const recognizerRef = useRef(null);
+    const [recognizedResults, setRecognizedResults] = useState<ProcessedResult[]>([]);
+    const [isListening, setIsListening] = useState<boolean>(false);
+    const [error, setError] = useState<string|null>(null);
+    const recognizerRef = useRef<speechsdk.SpeechRecognizer | null>(null);
+    const {micStatus, requestMicrophoneAccess} = useMicrophone();
 
     // Activate microphone for speech recognition
     const startListening = async () => {
@@ -151,7 +143,16 @@ const useVoiceRecognition = () => {
         setIsListening(true);
         setError(null);
 
-        checkMicrophonePermission();
+        //checkMicrophonePermission();
+        if(!micStatus.permission)
+        {
+            const accessGranted = await requestMicrophoneAccess();
+            if(!accessGranted) {
+                setIsListening(false);
+                setError("Microphone access denied");
+                return;
+            }
+        }
 
         // Get Microsoft recognizer
         const recognizer = await getMicrosoftRecognizer();
@@ -164,7 +165,7 @@ const useVoiceRecognition = () => {
             return;
         }
 
-        const msPromise = new Promise((resolve, reject) => {
+        const msPromise = new Promise<RecognitionResult>((resolve, reject) => {
             recognizer.recognizeOnceAsync(result => {
                 setIsListening(false);
                 
@@ -192,20 +193,22 @@ const useVoiceRecognition = () => {
             });
         });
 
-        const webSpeechPromise = new Promise((resolve, reject) => {
+        const webSpeechPromise = new Promise<RecognitionResult[]>((resolve, reject) => {
             let promiseSettled = false; // Flag to track if the promise has been settled
 
-            const resolveOnce = (value) => {
+            const resolveOnce = (value: RecognitionResult|RecognitionResult[]) => {
                 if(!promiseSettled) {
                     promiseSettled = true;
-                    resolve(value);
+                    resolve(Array.isArray(value) ? value : [value]);
                 }
             };
 
-            const rejectOnce = (error) => {
+            const rejectOnce = (error:unknown) => {
                 if (!promiseSettled) {
                     promiseSettled = true;
-                    reject(error);
+                    const normalizedError = error instanceof Error ? error : 
+                    new Error(typeof error === 'string' ? error : 'Unknown error');
+                    reject(normalizedError);
                 }
             };
 
@@ -224,7 +227,7 @@ const useVoiceRecognition = () => {
 
             recognition.onstart = () => console.log("🟢 Web Speech API Started");
 
-            recognition.onresult = (event) => {
+            recognition.onresult = (event:SpeechRecognitionEvent) => {
                 clearTimeout(timeoutId); // Prevent timeout if we get a result
                 const results = [];
                 for (let i = 0; i < event.results[0].length; i++) {
@@ -234,7 +237,7 @@ const useVoiceRecognition = () => {
                     results.push({
                         text: transcript,
                         confidence: confidence,
-                        source: 'web-speech'
+                        source: 'web-speech' as const
                     });
                 }
                 resolveOnce(results.length > 0 ? results : [{ text: "", confidence: 0, source: 'web-speech' }]);
@@ -243,7 +246,7 @@ const useVoiceRecognition = () => {
             recognition.onsoundstart = () => console.log("🟡 Web Speech - detected sound");
             recognition.onspeechstart = () => console.log("🟡 Web Speech - detected speech");
 
-            recognition.onerror = (event) => {
+            recognition.onerror = (event:SpeechRecognitionErrorEvent) => {
                 clearTimeout(timeoutId); 
                 console.error("🔴 Web Speech API Error:", event.error);
                 resolveOnce({
@@ -283,7 +286,7 @@ const useVoiceRecognition = () => {
     });
 
     console.log("Results from both recognizers: ", results);
-    //const finalResult = selectBestResult(results);
+    
     const finalResult = getAllBestResults(results);
 
     if (!finalResult) {
@@ -291,16 +294,17 @@ const useVoiceRecognition = () => {
         //return "_";  // Return a safe fallback instead of an empty value
     }
     console.log("Final Result: ", finalResult);
-    setRecognizedText(finalResult);
+    setRecognizedResults(finalResult);
     };
 
-    const getAllBestResults = (results) => {
+    const getAllBestResults = (results: Array<RecognitionResult | RecognitionResult[] | null>):
+    ProcessedResult[]  => {
         console.log("Raw results from recognizers:", results);
         const [msResult, webResults] = results;
         const allValidResults = [];
     
         // Helper function to clean and validate a result
-        const processResult = (text, confidence, source) => {
+        const processResult = (text:string, confidence:number, source:SourceType):ProcessedResult | null => {
             const cleanedLetter = getRecognizedLetter(text); // Your existing cleaning function
             if (!cleanedLetter || cleanedLetter.trim() === "") {
                 console.log(`Ignoring invalid result: "${text}" (from ${source})`);
@@ -315,7 +319,7 @@ const useVoiceRecognition = () => {
         };
     
         // Process Microsoft result (if exists)
-        if (msResult?.text) {
+        if (msResult && !Array.isArray(msResult) && msResult.text) {
             const processed = processResult(
                 msResult.text,
                 msResult.confidence,
@@ -341,81 +345,9 @@ const useVoiceRecognition = () => {
         return allValidResults.length > 0 ? allValidResults : [];
     };
 
-    const selectBestResult = (results) => {
-        console.log("Comparing Results ...", results);
-        const [msResult, webResults] = results;
-        const allResults = []
-
-        if(msResult?.text){
-            allResults.push({ 
-                text: msResult.text, 
-                confidence: msResult.reason === ResultReason.RecognizedSpeech ? 0.9 : 0.5,
-                source: 'microsoft'
-            });
-        }
-         
-        // Ensure webResults is always an array
-        const webResultsArray = Array.isArray(webResults) ? webResults : [webResults];
-        webResultsArray.forEach(result => {
-            if (result.text !== null && result.text !== "") {
-                allResults.push({
-                    text: result.text,
-                    confidence: result.confidence || 0.5,
-                    source: 'web-speech'
-                });
-            }
-        });
-        
-        console.log("All Results: ", allResults);
-        // If no valid results exist, return an empty string to prevent hanging
-        if (allResults.length === 0) {
-            console.warn("No valid results from both recognizers");
-            return '';
-        }
-
-        // Filter out empty results
-        const validResults = allResults.filter(r => r.text && r.text.trim());
-        
-        if (validResults.length === 0) return ''; // No valid speech detected
-
-        // Process and prioritize results
-        const processedResults = validResults.map(result => {
-            const letter = getRecognizedLetter(result.text);
-
-            // If we get a single letter, return it immediately
-            if (/^[a-z]$/.test(letter)) {
-                console.log("✅ Recognized single letter:", letter, "from", result.source);
-                return letter;
-            }
-
-            return {
-                original: result.text,
-                letter,
-                confidence: result.source === 'microsoft' ? 1 : result.confidence, // Microsoft is always trusted
-                source: result.source
-            };
-        });
-
-        
-        // If a direct letter match was already returned, we don’t need to continue
-        if (typeof processedResults === 'string') return processedResults;
-
-        // If a direct letter match was found, return it
-        const singleLetterMatch = processedResults.find(res => /^[a-z]$/.test(res.letter));
-        if (singleLetterMatch) {
-            console.log("Single letter match found:", singleLetterMatch.letter);
-            return singleLetterMatch.letter;
-        }
-
-        // Sort by confidence (Microsoft always prioritized)
-        processedResults.sort((a, b) => b.confidence - a.confidence);
-        console.log("Sorted Results: ", processedResults);
-        return processedResults[0].letter || '';
-    };
-
     // Cancel recognition
     const stopListening = () => {
-        if (!isListening || !recognizedText) return; // No need to stop if we're not listening
+        if (!isListening || !recognizedResults) return; // No need to stop if we're not listening
 
         if (isListening && recognizerRef.current) {
             recognizerRef.current.close(); // Immediately stops the recognition process
@@ -424,7 +356,7 @@ const useVoiceRecognition = () => {
         };
     }
 
-    return {recognizedText, isListening, error, startListening, stopListening};
+    return {recognizedResults, isListening, error, startListening, stopListening};
 }
 
 export default useVoiceRecognition;

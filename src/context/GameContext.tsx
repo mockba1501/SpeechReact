@@ -1,24 +1,57 @@
-import { createContext, useState } from "react";
+import { createContext, ReactNode, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import GameStatsManager from "./GameStatsManager";
 
+interface GameContextType {
+    currentWord: string;
+    setCurrentWord: React.Dispatch<React.SetStateAction<string>>;
+    correctLetters: string[];
+    setCorrectLetters: React.Dispatch<React.SetStateAction<string[]>>;
+    incorrectLetters: string[];
+    setIncorrectLetters: React.Dispatch<React.SetStateAction<string[]>>;
+    clickedKeys: string[];
+    setClickedKeys: React.Dispatch<React.SetStateAction<string[]>>;
+    wrongGuesses: number;
+    setWrongGuesses: React.Dispatch<React.SetStateAction<number>>;
+    isGameWon: boolean;
+    setIsGameWon: React.Dispatch<React.SetStateAction<boolean>>;
+    showModal: boolean;
+    setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
+    isGameReset: boolean;
+    setIsGameReset: React.Dispatch<React.SetStateAction<boolean>>;
+    resetGameBoard: () => void;
+    isMicrophoneEnabled: boolean;
+    setIsMicrophoneEnabled: React.Dispatch<React.SetStateAction<boolean>>;
+    wordIndex: number;
+    setWordIndex: React.Dispatch<React.SetStateAction<number>>;
+    allWordsCompleted: boolean;
+    setAllWordsCompleted: React.Dispatch<React.SetStateAction<boolean>>;
+    handleNextWord: () => void;
+    handleRestart: () => void;
+    handleFeedback: () => void;
+    handleStopPlaying: () => void;
+    gameStatsManager: GameStatsManager;
+}
 //create a context for the game
-const GameContext = createContext();
+const GameContext = createContext<GameContextType>({} as GameContextType);
 const gameStatsManager = new GameStatsManager();
 
+interface GameProviderProps {
+    children: ReactNode;
+}
 //Provider component to manage game state and provide it to children components
-export const GameProvider = ({ children }) => {
-    const [currentWord, setCurrentWord] = useState("");
-    const [correctLetters, setCorrectLetters] = useState([]);
-    const [incorrectLetters, setIncorrectLetters] = useState([]);
-    const [clickedKeys, setClickedKeys] = useState([]);
-    const [wrongGuesses, setWrongGuesses] = useState(0);
-    const [isGameWon, setIsGameWon] = useState(false);
-    const [showModal, setShowModal] = useState(false);
-    const [isGameReset, setIsGameReset] = useState(false);
-    const [isMicrophoneEnabled, setIsMicrophoneEnabled] = useState(true);
-    const [wordIndex, setWordIndex] = useState(0);
-    const [allWordsCompleted, setAllWordsCompleted] = useState(false);
+export const GameProvider = ({ children }:GameProviderProps) => {
+    const [currentWord, setCurrentWord] = useState<string>("");
+    const [correctLetters, setCorrectLetters] = useState<string[]>([]);
+    const [incorrectLetters, setIncorrectLetters] = useState<string[]>([]);
+    const [clickedKeys, setClickedKeys] = useState<string[]>([]);
+    const [wrongGuesses, setWrongGuesses] = useState<number>(0);
+    const [isGameWon, setIsGameWon] = useState<boolean>(false);
+    const [showModal, setShowModal] = useState<boolean>(false);
+    const [isGameReset, setIsGameReset] = useState<boolean>(false);
+    const [isMicrophoneEnabled, setIsMicrophoneEnabled] = useState<boolean>(true);
+    const [wordIndex, setWordIndex] = useState<number>(0);
+    const [allWordsCompleted, setAllWordsCompleted] = useState<boolean>(false);
     
     const navigate = useNavigate();
 
@@ -102,7 +135,7 @@ export const GameProvider = ({ children }) => {
                 gameStatsManager
             }}>
             {children}
-            </GameContext.Provider>
+        </GameContext.Provider>
     );
     
 }

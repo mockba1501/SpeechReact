@@ -1,8 +1,17 @@
-const HANGMAN_URL = import.meta.env.VITE_HANGMAN_WORD_API;
-const HANGMAN_PROJECT_ID = import.meta.env.VITE_HANGMAN_PROJECT_ID;
-//console.log(HANGMAN_URL, HANGMAN_PROJECT_ID);
 
-export const games = [
+//export type {GameDetails, GameSetting, GameSettings}
+
+//const HANGMAN_URL:string = import.meta.env.VITE_HANGMAN_WORD_API;
+//const HANGMAN_PROJECT_ID:string = import.meta.env.VITE_HANGMAN_PROJECT_ID;
+
+const VOCAMETRIX_URL:string = import.meta.env.VITE_VOCAMETRIX_PLATFORM;
+const VOCAMETRIX_URL_API:string = import.meta.env.VITE_VOCAMETRIX_API_KEY;
+
+if (!VOCAMETRIX_URL || !VOCAMETRIX_URL_API) {
+  throw new Error("Missing required environment variables");
+}
+
+export const games: GameDetails[] = [
   { 
     id: "hangman", 
     name: "Voice Hangman", 
@@ -18,8 +27,8 @@ export const games = [
     description: "2nd Iteration with AI word generator.\nLetter by Letter Guessing",
     requiresSettings: true,
     fetchWords: true,
-    fetchPath: `${HANGMAN_URL}`, 
-    projectID: `${HANGMAN_PROJECT_ID}`
+    fetchPath: VOCAMETRIX_URL, 
+    projectID: VOCAMETRIX_URL_API
   },
   { 
     id: "hangman3", 
@@ -27,8 +36,8 @@ export const games = [
     description: "3rd Iteration with custom difficulty.\nFull pronounciation Varient",
     requiresSettings: true,
     fetchWords: true,
-    fetchPath: `${HANGMAN_URL}`, 
-    projectID: `${HANGMAN_PROJECT_ID}`
+    fetchPath: VOCAMETRIX_URL, 
+    projectID: VOCAMETRIX_URL_API
   },
   /*
   { 
@@ -42,7 +51,14 @@ export const games = [
   },*/
 ];
 
-export const gameSettings = {
+/*
+enum Difficulty {
+  Easy = "Easy",
+  Medium = "Medium",
+  Hard = "Hard"
+}
+*/
+export const gameSettings: GameSettings = {
     "hangman": [ ], // No settings available for Hangman
     "word-puzzle": [
       { id: "timeLimit", label: "Time Limit", options: ["30s", "60s", "90s"] },

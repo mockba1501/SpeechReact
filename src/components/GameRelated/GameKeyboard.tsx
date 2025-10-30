@@ -1,12 +1,20 @@
-const GameKeyboard = ({handleClickedKey, clickedKeys,isVersion2 = false}) => {
-    const alphabetArray = Array.from({length: 26}, (_, i) =>
-        String.fromCharCode(97 + i)
+import { useMemo, useCallback } from "react";
+
+interface GameKeyboardProps {
+    handleClickedKey: (key:string) => void;
+    clickedKeys: string[];
+    isVersion2?: boolean;
+}
+
+const GameKeyboard = ({handleClickedKey, clickedKeys,isVersion2 = false}:GameKeyboardProps) => {
+    const alphabetArray = useMemo(() =>  
+        Array.from({length: 26}, (_, i) => String.fromCharCode(97 + i)),[]
     );
 
     // Function to handle backspace
-    const handleBackspace = () => {
+    const handleBackspace = useCallback(() => {
         handleClickedKey("Backspace"); // Send a special key to the parent component
-    };
+    }, [handleClickedKey]);
 
     //console.log(alphabetArray);
     return (

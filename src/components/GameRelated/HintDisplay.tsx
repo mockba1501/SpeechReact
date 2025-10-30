@@ -2,12 +2,26 @@ import React, { useEffect, useState } from 'react';
 import IconButton from '@mui/material/IconButton';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 
-const HintDisplay = ({ currentWord, difficulty, hintDescription, hintImage }) => {
+interface HintDisplayProps {
+    currentWord: string;
+    difficulty: 'Easy' | 'Medium' | 'Hard';
+    hintDescription?: string;
+    hintImage?: string;
+}
+const HintDisplay = ({ currentWord, difficulty, hintDescription, hintImage }:HintDisplayProps) => {
     const [isWordVisible, setIsWordVisible] = useState(false);
 
-    const playWordSound = (word) => {
-        const utterance = new SpeechSynthesisUtterance(word);
-        speechSynthesis.speak(utterance);
+    const playWordSound = (word:string) => {
+          try {
+            if (!window.speechSynthesis) {
+            console.warn("Speech synthesis not supported");
+            return;
+            }
+            const utterance = new SpeechSynthesisUtterance(word);
+            speechSynthesis.speak(utterance);
+        } catch (error) {
+            console.error("Error playing word sound:", error);
+        }
     };
 
     useEffect(() => {
@@ -31,7 +45,10 @@ const HintDisplay = ({ currentWord, difficulty, hintDescription, hintImage }) =>
 
         return () => {
             console.log("Hint Display Cleanup, Unmounting");
+            // Only cancel if speech is still active
+            if (speechSynthesis.speaking) {
             speechSynthesis.cancel();
+            }
         }
     }, [currentWord, difficulty]);
 
@@ -40,7 +57,9 @@ const HintDisplay = ({ currentWord, difficulty, hintDescription, hintImage }) =>
         <div className="flex flex-col items-center">
             <div className="flex items-center gap-2">
                 <h4>Pronounce the word, Click to Listen:</h4>
-                <IconButton onClick={() => playWordSound(currentWord)} color="primary">
+                <IconButton onClick={() => playWordSound(currentWord)} 
+                            color="primary"
+                            aria-label="Play word pronunciation">
                     <VolumeUpIcon fontSize="large" />
                 </IconButton>
             </div>

@@ -3,7 +3,7 @@ import { getTokenOrRefresh } from "../token_util";
 import { ResultReason } from 'microsoft-cognitiveservices-speech-sdk';
 import * as speechsdk from 'microsoft-cognitiveservices-speech-sdk';
 
-const cleanRecognizedText = (text) => {
+const cleanRecognizedText = (text:string) => {
     let cleanedWord = "";
     console.log("Cleaning ", text); 
     // Normalize the text: lowercase and trim whitespace
@@ -18,16 +18,19 @@ const cleanRecognizedText = (text) => {
 const useFullWordRecognition = () => {
     const [recognizedWord, setRecognizedWord] = useState('');
     const [isListening, setIsListening] = useState(false);
-    const [error, setError] = useState(null);
-    const recognizerRef = useRef(null);
+    const [error, setError] = useState<string | null>(null);
+    const recognizerRef = useRef<speechsdk.SpeechRecognizer | null>(null);
 
     const startListening = async () => {
         setIsListening(true);
         setError(null);
 
         try {
-            const tokenObj = await getTokenOrRefresh();
-            if (!tokenObj.authToken) {
+            const tokenObj: AuthResult = await getTokenOrRefresh();
+            console.log(tokenObj);
+            if (!tokenObj.authToken || !tokenObj.region) {
+                alert("Voice features are still initializing. Please try again in a moment.");
+                console.error("Authorization token is null or undefined");
                 throw new Error("Authorization token is null or undefined");
             }
 
@@ -53,9 +56,10 @@ const useFullWordRecognition = () => {
                 }
                 recognizer.close();
             });
-        } catch (error) {
+        } catch (error:unknown) {
             setIsListening(false);
-            setError(error.message);
+            const errMessage = error instanceof Error ? error.message : 'Unknown error';
+            setError(errMessage);
             console.log(error);
         }
     };

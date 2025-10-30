@@ -33,22 +33,23 @@ const GameBoard = () => {
             setIsGameReset,
             isMicrophoneEnabled,
             setIsMicrophoneEnabled } = useContext(GameContext);    
-    const { recognizedText, isListening, error, startListening, stopListening } = useVoiceRecognition();
+    const { recognizedResults, isListening, error, startListening, stopListening } = useVoiceRecognition();
     
-    const [recognitionMessage, setRecognitionMessage] = useState({
+    const [recognitionMessage, setRecognitionMessage] = useState<RecognitionMessage|null>({
         type: 'info',
         text: 'Press the mic button and say a letter'
     });
 
     //Reference for the hint element
-    const hintRef = useRef(null);
+    const hintRef = useRef<HTMLSpanElement>(null);
     const maxGuesses = 6;
 
     //Effect to initialize the game board with a random word
     useEffect(() => {
         //Get a random word from the word list
         const {word, hint} = wordList[Math.floor(Math.random() * wordList.length)];
-        hintRef.current.innerText = hint;
+        if(hintRef.current)
+        {hintRef.current.innerText = hint;}
         setCurrentWord(word);
         setCorrectLetters(new Array(word.length).fill(""));
         setIsGameReset(false);
@@ -73,7 +74,7 @@ const GameBoard = () => {
     }, [correctLetters, wrongGuesses, currentWord, setIsGameWon, setShowModal]);
     
     //Handle Key clicks and update the game state accordingly
-    const handleClickedKey = (clickedKey) => {
+    const handleClickedKey = (clickedKey:string) => {
         console.log("Clicked Key: ",clickedKey);
 
         // Skip if key was already guessed (correct or incorrect)
@@ -110,16 +111,16 @@ const GameBoard = () => {
 
     // Updated recognition handler
     useEffect(() => {
-        console.log("Recognized Text: ", recognizedText);
+        console.log("Recognized Text: ", recognizedResults);
         // Clear message after 3 seconds
-        const timer = recognitionMessage? setTimeout(() => setRecognitionMessage(null), 3000) : null;
+        const timer = recognitionMessage? setTimeout(() => setRecognitionMessage(null), 3000) : undefined;
 
         if (!isListening) {
             setRecognitionMessage(null);
             
         }
 
-        if (!recognizedText || recognizedText.length === 0) {
+        if (!recognizedResults || recognizedResults.length === 0) {
             setRecognitionMessage({
                 type: 'error',
                 text: 'Sorry could not recognize! Please try speaking clearly.'
@@ -129,7 +130,7 @@ const GameBoard = () => {
 
         // Find best candidate (existing logic)
         console.log("Current Word: ", currentWord);
-        const validLetters = recognizedText.filter(item => 
+        const validLetters = recognizedResults.filter(item => 
         {
             console.log("Item: ", item);
             return currentWord.includes(item.letter.toLowerCase())
@@ -137,7 +138,7 @@ const GameBoard = () => {
         );
         validLetters.sort((a, b) => b.confidence - a.confidence);
         console.log("Valid Letters: ", validLetters);
-        const fallbackLetter = getFallbackLetter(recognizedText);
+        const fallbackLetter = getFallbackLetter(recognizedResults);
 
         // Determine action based on results
         if (validLetters.length > 0) {
@@ -162,10 +163,13 @@ const GameBoard = () => {
             });
         }
 
-        return () => clearTimeout(timer);
-    }, [recognizedText]);
+        return () => {
+            if(timer) 
+            clearTimeout(timer)
+        };
+    }, [recognizedResults]);
     
-    const getFallbackLetter = (results) => {
+    const getFallbackLetter = (results:ProcessedResult[]) => {
         if (!results || results.length === 0) return null;
         const sorted = [...results].sort((a, b) => b.confidence - a.confidence);
         return sorted[0].letter;

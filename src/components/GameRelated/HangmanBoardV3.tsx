@@ -1,15 +1,11 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 //Core Game Logic
 import GameContext from "../../context/GameContext";
 import GameKeyboard from "./GameKeyboard";
 import useFullWordRecognition from "../../hooks/useFullWordRecognition";
 
-//New logic to be implemented
-//import ScoringPanel from "./ScoringPanel";
-//import DifficultyControls from "./DifficultyControls";
 import HintDisplay from "./HintDisplay";
-//import GameFeedback from "./GameFeedback";
 
 //Styling
 import Switch from '@mui/material/Switch';
@@ -19,7 +15,7 @@ import IconButton from '@mui/material/IconButton';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Typography from '@mui/material/Typography';
 
-const HangmanBoardV3 = ({settings, words}) => {
+const HangmanBoardV3 = ({settings, words}:{ settings: GameSettingsMap; words: WordItem[] }) => {
     const {currentWord,
             setCurrentWord,
             clickedKeys,
@@ -41,28 +37,30 @@ const HangmanBoardV3 = ({settings, words}) => {
             } = useContext(GameContext);    
 
     const { recognizedWord, isListening, error, startListening, stopListening } = useFullWordRecognition();
-    const [categorizedLetters, setCategorizedLetters] = useState([]);
-    const [userSpelling, setUserSpelling] = useState([]);
+    const [categorizedLetters, setCategorizedLetters] = useState<Array<CategorizedLetter>>([]);
+    const [userSpelling, setUserSpelling] = useState<string[]>([]);
 
     //Reference for the hint element
     const [hintDescription, setHintDescription] = useState("");
     const maxGuesses = 6;
     //Effect to initialize the game board with a random word
-
+    console.log("Passed words: ", words);
     //Pass the game settings once you load the page 
     useEffect(() => {
         setWordIndex(0);
         resetGameState();
         gameStatsManager.resetStats();
-        gameStatsManager.setSessionSettings(settings,"v3");
+        gameStatsManager.setSessionSettings(settings,"V3");
     },[])
     
     useEffect(() => {
         resetGameState();
 
+        console.log("Current words:",words);
         if(words.length > 0 && wordIndex < words.length)
         {
             const {word, hint} = words[wordIndex];
+            console.log("Words",words,"current word", word,"the hint", hint);
             setHintDescription(hint);
             //console.log("Current word is: ", word);
             setCurrentWord(word);
@@ -74,7 +72,7 @@ const HangmanBoardV3 = ({settings, words}) => {
             //console.log("All words are completed");
             setAllWordsCompleted(true);
         }
-    }, [wordIndex]); // I only need to activiate this effect when the wordIndex changes
+    }, [wordIndex, words]); // I only need to activiate this effect when the wordIndex changes
 
     //Logic to detect the correct letters and their positions
     useEffect(() => {
@@ -129,7 +127,7 @@ const HangmanBoardV3 = ({settings, words}) => {
         }
     }, [userSpelling]);
 
-    const checkMatchingWords = (currentWord, checkWord) =>
+    const checkMatchingWords = (currentWord:string, checkWord:string) =>
     {
         //console.log("Checking Words ", currentWord, " ", checkWord);
         if (checkWord.toLowerCase() === currentWord.toLowerCase()) {
@@ -156,7 +154,7 @@ const HangmanBoardV3 = ({settings, words}) => {
       //  gameStatsManager.resetStats();
     };
 
-    const categorizeLetters = (targetWord, userWord) => {
+    const categorizeLetters = (targetWord:string, userWord:string):CategorizedLetter[] => {
         const targetArray = targetWord.toLowerCase().split("");
         const userArray = userWord.toLowerCase().split("");
         const categorized = new Array(targetArray.length).fill(null);
@@ -190,7 +188,7 @@ const HangmanBoardV3 = ({settings, words}) => {
         return categorized;
     };
 
-    const handleClickedKey = (clickedKey) => {
+    const handleClickedKey = (clickedKey:string) => {
         if (clickedKey === "Backspace") {
             // Remove the last character from userSpelling
             if(userSpelling.length !== 0 && userSpelling.length !== currentWord.length)
@@ -263,13 +261,12 @@ const HangmanBoardV3 = ({settings, words}) => {
             </ul>
 
             {/* Display the hint */}
-             
             <HintDisplay 
                 currentWord={currentWord} 
-                difficulty={settings.difficulty} 
+                difficulty={(settings.difficulty as 'Easy' | 'Medium' | 'Hard') || 'Easy'}
                 hintDescription={hintDescription} 
-             
             />
+
             {/*  hintImage={hintImage} */} 
             {/* {
             <h4 className="mb-4 text-center text-lg font-medium max-md:text-base">
