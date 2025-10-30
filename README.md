@@ -175,3 +175,6 @@ npm test
 ## 📜 License
 
 MIT License — see `LICENSE.md`.
+
+### Third-Party Licenses
+This project depends on third-party libraries that are licensed separately from the project’s MIT license. See `THIRD_PARTY_NOTICES.md`.
