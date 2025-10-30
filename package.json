@@ -25,7 +25,12 @@
   },
   "description": "This is a React application game that utilized the Azure Speech service to detect letters",
   "main": "index.js",
-  "author": "",
+  "author": "Mohammed Ockba",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mockba1501/SpeechReact/"
+  },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
     "@testing-library/jest-dom": "^6.6.3",
