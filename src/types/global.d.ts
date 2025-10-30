@@ -87,4 +87,44 @@ declare global {
             categorizedWord: CategorizedLetter[];
         }[];
     }
+
+    interface Results {
+        wordsPlayed: WordPlayed[];
+    }
+
+    interface WordPlayed {
+        word: string;
+        accuracy: number;
+        mistakes: string[];
+        attempts: Array<V2Attempt | V3Attempt>;
+        correctLetters: string[];
+    }
+
+
+    //Used in GameStatsManager
+    interface SessionSettings {
+        gameVersion: "V2" | "V3"
+        sound?: string;
+        position?: string;
+        age?: string;
+        //[key: string]: any;
+      }
+      
+      interface BaseAttempt {
+        recognitionMode?: string;
+        gameVersion: "V2" | "V3";
+        timestamp: number;
+      }
+      
+      interface V2Attempt extends BaseAttempt {
+        clickedKey?:string;
+        isCorrect?: boolean;
+        correctLetters: string[];
+        incorrectLetters: string[];
+      }
+      
+      interface V3Attempt extends BaseAttempt {
+        attemptWord?: string;
+        categorizedWord?: Array<CategorizedLetter|null>
+      }
 }

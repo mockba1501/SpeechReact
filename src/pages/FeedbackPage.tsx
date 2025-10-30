@@ -10,8 +10,8 @@ const FeedbackPage = () => {
         gameStatsManager,
         resetGameBoard,
     } = useContext(GameContext);
-    const [results, setResults] = useState(null);
-    const [settings, setSettings] = useState(null);
+    const [results, setResults] = useState<Results|null>(null);
+    const [settings, setSettings] = useState<SessionSettings|null>(null);
     const navigate = useNavigate();
     
     useEffect(() => {
@@ -64,7 +64,7 @@ const FeedbackPage = () => {
                 }}
             >
                 <Typography variant="h4" fontWeight="bold" mb={2}>
-                    Game Feedback ({settings.gameVersion})
+                    Game Feedback ({settings?.gameVersion})
                 </Typography>
 
                 {results.wordsPlayed.length === 0 ? (
@@ -72,7 +72,7 @@ const FeedbackPage = () => {
                 ) : (
                 <List sx={{ width: "100%" }}>
                     <h2>Great job! You practiced <b>{results.wordsPlayed.length} word{results.wordsPlayed.length>1?"s ":" "}</b>
-                        with the sound <b>{'"'}{settings.sound}{'"'}</b> in the <b>{settings.position} of the word</b>. Keep up the good work!
+                        with the sound <b>{'"'}{settings?.sound}{'"'}</b> in the <b>{settings?.position} of the word</b>. Keep up the good work!
                         </h2>
                     {results.wordsPlayed.map((wordData, index) => (
                         <details key={index} style={{ width: "100%", borderBottom: "1px solid #ddd", padding: "8px 0" }} open={index === 0}>
@@ -81,19 +81,19 @@ const FeedbackPage = () => {
                                     ▶️
                                 </span>
                                 {wordData.word} - Accuracy: {wordData.accuracy}%
-                                {settings.gameVersion === "V2" && `, Precision: ${gameStatsManager.getPrecisionForWord(wordData.word)}%`}
+                                {settings?.gameVersion === "V2" && `, Precision: ${gameStatsManager.getPrecisionForWord(wordData.word)}%`}
                             </summary>
                         
-                            {settings.gameVersion === "V3" ? (
+                            {settings?.gameVersion === "V3" ? (
                                     // Version 1: Show all attempts
                                     <List sx={{ paddingLeft: 2, backgroundColor: "#f9f9f9", borderRadius: "8px", padding: "8px", marginTop: "4px" }}>
-                                        {wordData.attempts.map((attempt, attemptIndex) => (
+                                        {(wordData.attempts as V3Attempt[]).map((attempt, attemptIndex) => (
                                             <ListItem key={attemptIndex} sx={{ display: "block" }}>
                                                 <h3 style={{ margin: 0, marginRight: "16px", flexShrink: 0 }}>
                                                     <b>Attempt {attemptIndex + 1}:</b>
                                                 </h3>
                                                 <ListItemText
-                                                    primary={attempt.categorizedWord.map((mistake, i) => (
+                                                    primary={attempt.categorizedWord?.map((mistake, i:number) => (
                                                         <span key={i} style={{ color: mistake?.color || "gray", marginRight: 4 }}>
                                                             <b>{mistake?.letter || "_"}</b>
                                                         </span>

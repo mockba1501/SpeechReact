@@ -1,24 +1,4 @@
-interface SessionSettings {
-  gameVersion: "V2" | "V3"
-}
 
-interface BaseAttempt {
-  recognitionMode?: string;
-  gameVersion: "V2" | "V3";
-  timestamp: number;
-}
-
-interface V2Attempt extends BaseAttempt {
-  clickedKey?:string;
-  isCorrect?: boolean;
-  correctLetters: string[];
-  incorrectLetters: string[];
-}
-
-interface V3Attempt extends BaseAttempt {
-  attemptWord?: string;
-  categorizedWord?: Array<{color: "green" | "yellow" | "red"} | null>
-}
 
 class GameStatsManager {
   private attemptsByWord: Record<string, Array<V2Attempt|V3Attempt>>;
